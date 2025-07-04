@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace Microsoft.Xna.Framework
 {
@@ -108,12 +109,12 @@ namespace Microsoft.Xna.Framework
             get
             {
                 return string.Concat(
-                    "Near( ", this._planes[0].DebugDisplayString, " )  \r\n",
-                    "Far( ", this._planes[1].DebugDisplayString, " )  \r\n",
-                    "Left( ", this._planes[2].DebugDisplayString, " )  \r\n",
-                    "Right( ", this._planes[3].DebugDisplayString, " )  \r\n",
-                    "Top( ", this._planes[4].DebugDisplayString, " )  \r\n",
-                    "Bottom( ", this._planes[5].DebugDisplayString, " )  "
+                    "Near ", this._planes[0].ToString(), "  \r\n",
+                    "Far ", this._planes[1].ToString(), "  \r\n",
+                    "Left ", this._planes[2].ToString(), "  \r\n",
+                    "Right ", this._planes[3].ToString(), "  \r\n",
+                    "Top ", this._planes[4].ToString(), "  \r\n",
+                    "Bottom ", this._planes[5].ToString(), " )  "
                     );
             }
         }
@@ -536,26 +537,23 @@ namespace Microsoft.Xna.Framework
             // Note: N refers to the normal, d refers to the displacement. '.' means dot product. '*' means cross product
             
             Vector3 v1, v2, v3;
-            Vector3 cross;
+            Vector3 cross = Vector3.Cross(b.Normal, c.Normal);
             
-            Vector3.Cross(ref b.Normal, ref c.Normal, out cross);
-            
-            float f;
-            Vector3.Dot(ref a.Normal, ref cross, out f);
+            float f = Vector3.Dot(a.Normal, cross);
             f *= -1.0f;
             
-            Vector3.Cross(ref b.Normal, ref c.Normal, out cross);
-            Vector3.Multiply(ref cross, a.D, out v1);
+            cross = Vector3.Cross(b.Normal, c.Normal);
+            v1 = Vector3.Multiply(cross, a.D);
             //v1 = (a.D * (Vector3.Cross(b.Normal, c.Normal)));
-            
-            
-            Vector3.Cross(ref c.Normal, ref a.Normal, out cross);
-            Vector3.Multiply(ref cross, b.D, out v2);
+
+
+            cross = Vector3.Cross(c.Normal, a.Normal);
+            v2 = Vector3.Multiply(cross, b.D);
             //v2 = (b.D * (Vector3.Cross(c.Normal, a.Normal)));
             
             
-            Vector3.Cross(ref a.Normal, ref b.Normal, out cross);
-            Vector3.Multiply(ref cross, c.D, out v3);
+            cross = Vector3.Cross(a.Normal, b.Normal);
+            v3 = Vector3.Multiply(cross, c.D);
             //v3 = (c.D * (Vector3.Cross(a.Normal, b.Normal)));
             
             result.X = (v1.X + v2.X + v3.X) / f;

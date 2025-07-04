@@ -164,7 +164,7 @@ namespace Microsoft.Xna.Framework.Graphics
 				else
 				{
 					int index2 = modelBone.Parent.Index;
-					Matrix.Multiply(ref modelBone.transform, ref destinationBoneTransforms[index2], out destinationBoneTransforms[index1]);
+                    destinationBoneTransforms[index1] = Matrix.Multiply(modelBone.transform, destinationBoneTransforms[index2]);
 				}
 			}
 		}

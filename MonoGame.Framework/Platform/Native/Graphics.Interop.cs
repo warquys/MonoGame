@@ -198,7 +198,7 @@ internal static unsafe partial class MGG
     public static extern int GraphicsDevice_BeginFrame(MGG_GraphicsDevice* device);
 
     [DllImport(MGP.MonoGameNativeDLL, EntryPoint = "MGG_GraphicsDevice_Clear", ExactSpelling = true)]
-    public static extern void GraphicsDevice_Clear(MGG_GraphicsDevice* device, ClearOptions options, Microsoft.Xna.Framework.Vector4* color, float depth, int stencil);
+    public static extern void GraphicsDevice_Clear(MGG_GraphicsDevice* device, ClearOptions options, Vector4* color, float depth, int stencil);
 
     [DllImport(MGP.MonoGameNativeDLL, EntryPoint = "MGG_GraphicsDevice_Present", ExactSpelling = true)]
     public static extern void GraphicsDevice_Present(MGG_GraphicsDevice* device, int currentFrame, int syncInterval);

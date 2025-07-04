@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Numerics;
+using Microsoft.Xna.Framework;
 using NUnit.Framework;
 
 namespace MonoGame.Tests.Framework
@@ -24,6 +25,7 @@ namespace MonoGame.Tests.Framework
             expected.Z = 3;
             expected.W = 4;
             Compare(expected, new Quaternion(1, 2, 3, 4));
+            // TODO: Create a static FromMethod
             Compare(expected, new Quaternion(new Vector3(1, 2, 3), 4));
 #if !XNA
             Compare(expected, new Quaternion(new Vector4(1, 2, 3, 4)));
@@ -44,8 +46,7 @@ namespace MonoGame.Tests.Framework
             Quaternion expected = new Quaternion(2, 4, 6, 8);
             Compare(expected, Quaternion.Add(q1, q2));
 
-            Quaternion result;
-            Quaternion.Add(ref q1, ref q2, out result);
+            Quaternion result = Quaternion.Add(q1, q2);
             Compare(expected, result);
         }
 
@@ -57,8 +58,7 @@ namespace MonoGame.Tests.Framework
             Quaternion expected = new Quaternion(21.5f, 6.2f, -8.7f, 13.4f);
             Compare(expected, Quaternion.Concatenate(q1, q2));
 
-            Quaternion result;
-            Quaternion.Concatenate(ref q1, ref q2, out result);
+            Quaternion result = Quaternion.Concatenate(q1, q2);
             Compare(expected, result);
         }
 
@@ -69,8 +69,7 @@ namespace MonoGame.Tests.Framework
             Quaternion expected = new Quaternion(-1, -2, -3, 4);
             Compare(expected, Quaternion.Conjugate(q));
 
-            Quaternion result;
-            Quaternion.Conjugate(ref q, out result);
+            Quaternion result = Quaternion.Conjugate(q);
             Compare(expected, result);
 
             q.Conjugate();
@@ -87,19 +86,18 @@ namespace MonoGame.Tests.Framework
             Compare(expected, Quaternion.CreateFromAxisAngle(axis, angle));
 
             Quaternion result;
-            Quaternion.CreateFromAxisAngle(ref axis, angle, out result);
+            result = Quaternion.CreateFromAxisAngle(axis, angle);
             Compare(expected, result);
         }
 
         [Test]
         public void CreateFromRotationMatrix()
         {
-            var matrix = Matrix.CreateFromYawPitchRoll(0.15f, 1.18f, -0.22f);
+            var matrix = Matrix4x4.CreateFromYawPitchRoll(0.15f, 1.18f, -0.22f);
             Quaternion expected = new Quaternion(0.5446088f, 0.1227905f, -0.1323988f, 0.8190203f);
             Compare(expected, Quaternion.CreateFromRotationMatrix(matrix));
 
-            Quaternion result;
-            Quaternion.CreateFromRotationMatrix(ref matrix, out result);
+            Quaternion result = Quaternion.CreateFromRotationMatrix(matrix);
             Compare(expected, result);
         }
 
@@ -109,8 +107,7 @@ namespace MonoGame.Tests.Framework
             Quaternion expected = new Quaternion(0.5446088f, 0.1227905f, -0.1323988f, 0.8190203f);
             Compare(expected, Quaternion.CreateFromYawPitchRoll(0.15f, 1.18f, -0.22f));
 
-            Quaternion result;
-            Quaternion.CreateFromYawPitchRoll(0.15f, 1.18f, -0.22f, out result);
+            Quaternion result = Quaternion.CreateFromYawPitchRoll(0.15f, 1.18f, -0.22f);
             Compare(expected, result);
         }
 
@@ -122,8 +119,7 @@ namespace MonoGame.Tests.Framework
             Quaternion expected = new Quaternion(-0.1858319f, 0.09661285f, -0.3279344f, 0.2446305f);
             Compare(expected, Quaternion.Divide(q1, q2));
 
-            Quaternion result;
-            Quaternion.Divide(ref q1, ref q2, out result);
+            Quaternion result = Quaternion.Divide(q1, q2);
             Compare(expected, result);
         }
 
@@ -149,8 +145,7 @@ namespace MonoGame.Tests.Framework
 
             Compare(expected, Quaternion.Normalize(q));
 
-            Quaternion result;
-            Quaternion.Normalize(ref q, out result);
+            Quaternion result = Quaternion.Normalize(q);
             Compare(expected, result);
 
 

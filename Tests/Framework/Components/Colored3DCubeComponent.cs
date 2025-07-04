@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 using Microsoft.Xna.Framework;
@@ -16,7 +17,7 @@ namespace MonoGame.Tests.Components {
 	    GraphicsDevice graphicsDevice;
 		BasicEffect basicEffect;
 
-		Matrix worldMatrix, viewMatrix, projectionMatrix;
+		Matrix4x4 worldMatrix, viewMatrix, projectionMatrix;
 
         public Vector3 CubePosition { get; set; }
 
@@ -28,13 +29,13 @@ namespace MonoGame.Tests.Components {
 		public void LoadContent ()
 		{
 			// setup our graphics scene matrices
-			worldMatrix = Matrix.Identity;
-			viewMatrix = Matrix.CreateLookAt (new Vector3 (0, 0, 5), Vector3.Zero, Vector3.Up);
-			projectionMatrix = Matrix.CreatePerspectiveFieldOfView (MathHelper.PiOver4, graphicsDevice.Viewport.AspectRatio, 1, 10);
+			worldMatrix = Matrix4x4.Identity;
+			viewMatrix = Matrix4x4.CreateLookAt (new Vector3 (0, 0, 5), Vector3.Zero, Vector3.Up);
+			projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView (MathHelper.PiOver4, graphicsDevice.Viewport.AspectRatio, 1, 10);
 
-			worldMatrix *= Matrix.CreateRotationX (-0.05f * 30f);
-			worldMatrix *= Matrix.CreateRotationY (-0.05f * 20f);
-		    worldMatrix *= Matrix.CreateTranslation(CubePosition);
+			worldMatrix *= Matrix4x4.CreateRotationX (-0.05f * 30f);
+			worldMatrix *= Matrix4x4.CreateRotationY (-0.05f * 20f);
+		    worldMatrix *= Matrix4x4.CreateTranslation(CubePosition);
 
 			// Setup our basic effect
 			basicEffect = new BasicEffect(graphicsDevice);

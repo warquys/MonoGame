@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Numerics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -687,8 +688,8 @@ namespace MonoGame.Tests.Graphics
                     heightMapData[(y * heightMapSize) + x] = (float) Math.Sin(x / 2.0f) + (float) Math.Sin(y / 3.0f);
             heightMapTexture.SetData(heightMapData);
 
-            var viewMatrix = Matrix.CreateLookAt(new Vector3(32, 10, 60), new Vector3(32, 0, 30), Vector3.Up);
-            var projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
+            var viewMatrix = Matrix4x4.CreateLookAt(new Vector3(32, 10, 60), new Vector3(32, 0, 30), Vector3.Up);
+            var projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
                 gd.Viewport.AspectRatio, 1.0f, 100.0f);
 
             var effect = AssetTestUtility.LoadEffect(content, "VertexTextureEffect");
