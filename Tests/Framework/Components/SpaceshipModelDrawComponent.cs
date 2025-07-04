@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,17 +19,17 @@ namespace MonoGame.Tests.Components
 			#region Fields
 			// The XNA framework Model object that we are going to display.
 			Model spaceshipModel;
-	
-			// Array holding all the bone transform matrices for the entire model.
-			// We could just allocate this locally inside the Draw method, but it
-			// is more efficient to reuse a single array, as this avoids creating
-			// unnecessary garbage.
-			Matrix[] boneTransforms;
+
+            // Array holding all the bone transform matrices for the entire model.
+            // We could just allocate this locally inside the Draw method, but it
+            // is more efficient to reuse a single array, as this avoids creating
+            // unnecessary garbage.
+            Matrix4x4[] boneTransforms;
 	
 			// Spaceship drawing parameters
-			private Matrix projection;
-			private Matrix rotation;
-			private Matrix view;
+			private Matrix4x4 projection;
+			private Matrix4x4 rotation;
+			private Matrix4x4 view;
 			private bool[] lights;
 			bool isTextureEnabled;
 			bool isPerPixelLightingEnabled;
@@ -44,7 +45,7 @@ namespace MonoGame.Tests.Components
 				spaceshipModel = content.Load<Model>(Paths.Model("Spaceship"));
 	
 				// Allocate the transform matrix array.
-				boneTransforms = new Matrix[spaceshipModel.Bones.Count];
+				boneTransforms = new Matrix4x4[spaceshipModel.Bones.Count];
 			}
 			#endregion
 	
@@ -52,7 +53,7 @@ namespace MonoGame.Tests.Components
 			/// <summary>
 			/// Gets or sets the projection matrix value.
 			/// </summary>
-			public Matrix Projection
+			public Matrix4x4 Projection
 			{
 				get { return projection; }
 				set { projection = value; }
@@ -61,7 +62,7 @@ namespace MonoGame.Tests.Components
 			/// <summary>
 			/// Gets or sets the rotation matrix value.
 			/// </summary>
-			public Matrix Rotation
+			public Matrix4x4 Rotation
 			{
 				get { return rotation; }
 				set { rotation = value; }
@@ -79,7 +80,7 @@ namespace MonoGame.Tests.Components
 			/// <summary>
 			/// Gets or sets the view matrix value.
 			/// </summary>
-			public Matrix View
+			public Matrix4x4 View
 			{
 				get { return view; }
 				set { view = value; }
@@ -220,15 +221,15 @@ namespace MonoGame.Tests.Components
 			var frameInfoSource = Game.Services.RequireService<IFrameInfoSource> ();
 			var frameInfo = frameInfoSource.FrameInfo;
 
-			spaceship.Rotation = Matrix.CreateWorld(new Vector3(0, 250, 0), Vector3.Forward, Vector3.Up) *
-				Matrix.CreateFromYawPitchRoll((float)Math.PI + MathHelper.PiOver2 + rotationXAmount / 100, rotationYAmount / 100, 0);
+			spaceship.Rotation = Matrix4x4.CreateWorld(new Vector3(0, 250, 0), Vector3.Forward, Vector3.Up) *
+                Matrix4x4.CreateFromYawPitchRoll((float)Math.PI + MathHelper.PiOver2 + rotationXAmount / 100, rotationYAmount / 100, 0);
 
-			spaceship.View = Matrix.CreateLookAt (
+			spaceship.View = Matrix4x4.CreateLookAt (
 				new Vector3(3500, 400, 0) + new Vector3(0, 250, 0),
 				new Vector3(0, 250, 0),
 				Vector3.Up);
 			spaceship.IsTextureEnabled = true;
-			spaceship.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(cameraFOV),
+			spaceship.Projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.ToRadians(cameraFOV),
 				GraphicsDevice.Viewport.AspectRatio, 10, 20000);
 
 

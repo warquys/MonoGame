@@ -863,10 +863,10 @@ namespace Microsoft.Xna.Framework
         internal string DebugDisplayString
         {
             get
-            {
+            {   // TODO: Discut if this new ToString format can cause issue
                 return string.Concat(
-                    "Min( ", this.Min.DebugDisplayString, " )  \r\n",
-                    "Max( ",this.Max.DebugDisplayString, " )"
+                    "Min", this.Min.ToString(), "  \r\n",
+                    "Max", this.Max.ToString()
                     );
             }
         }

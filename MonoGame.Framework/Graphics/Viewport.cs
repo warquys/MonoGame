@@ -233,8 +233,9 @@ namespace Microsoft.Xna.Framework.Graphics
         /// <returns></returns>
         public Vector3 Unproject(Vector3 source, Matrix projection, Matrix view, Matrix world)
         {
-             Matrix matrix = Matrix.Invert(Matrix.Multiply(Matrix.Multiply(world, view), projection));
-		    source.X = (((source.X - this.x) / ((float) this.width)) * 2f) - 1f;
+            if (!Matrix.Invert(Matrix.Multiply(Matrix.Multiply(world, view), projection), out var matrix))
+                throw new InvalidOperationException("Cannot invert the combined world, view, and projection matrix.");
+            source.X = (((source.X - this.x) / ((float) this.width)) * 2f) - 1f;
 		    source.Y = -((((source.Y - this.y) / ((float) this.height)) * 2f) - 1f);
 		    source.Z = (source.Z - this.minDepth) / (this.maxDepth - this.minDepth);
 		    Vector3 vector = Vector3.Transform(source, matrix);
