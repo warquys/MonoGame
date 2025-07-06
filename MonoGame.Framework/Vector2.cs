@@ -421,8 +421,8 @@ public static class Vector2Extensions
 #if NET9_0_OR_GREATER
             vector2 = Vector128.Round(vector2.AsVector64()).AsVector2();
 #else
-            vector2.X = MathF.Round(X);
-            vector2.Y = MathF.Round(Y);
+            vector2.X = MathF.Round(vector2.X);
+            vector2.Y = MathF.Round(vector2.Y);
 #endif
         }
 
