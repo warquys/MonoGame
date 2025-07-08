@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Threading;
 using Microsoft.VisualStudio.TestPlatform.CrossPlatEngine;
 using Microsoft.Xna.Framework;

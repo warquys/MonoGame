@@ -8,6 +8,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GenerateProgramFile>false</GenerateProgramFile>
     <DefineConstants>WINDOWS;DIRECTX</DefineConstants>
+	<LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

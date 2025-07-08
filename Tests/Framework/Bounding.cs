@@ -3,6 +3,7 @@
 // file 'LICENSE.txt', which is part of this source code package.
 
 using System;
+using System.Numerics;
 using Microsoft.Xna.Framework;
 using NUnit.Framework;
 
@@ -74,55 +75,55 @@ namespace MonoGame.Tests.Framework
         {
             get
             {
-                Matrix view, projection;
+                Matrix4x4 view, projection;
                 BoundingFrustum frustum;
 
                 // Frustum planes intersect with the box sides
-                view = Matrix.CreateLookAt(new Vector3(0, 0, -0.2f), Vector3.Zero, Vector3.Up);
-                projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 0.1f, 5);
+                view = Matrix4x4.CreateLookAt(new Vector3(0, 0, -0.2f), Vector3.Zero, Vector3.Up);
+                projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 0.1f, 5);
                 frustum = new BoundingFrustum(view * projection);
 
                 yield return new TestCaseData(frustum, ContainmentType.Intersects);
 
                 // Box is entirely inside the frustum
-                view = Matrix.CreateLookAt(new Vector3(0.5f, 0.5f, -10), new Vector3(0.5f, 0.5f, 0), Vector3.Up);
-                projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 1, 50);
+                view = Matrix4x4.CreateLookAt(new Vector3(0.5f, 0.5f, -10), new Vector3(0.5f, 0.5f, 0), Vector3.Up);
+                projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 1, 50);
                 frustum = new BoundingFrustum(view * projection);
 
                 yield return new TestCaseData(frustum, ContainmentType.Intersects);
 
-                view = Matrix.CreateLookAt(new Vector3(2f, 0.5f, 0), new Vector3(2, 0.5f, 1), Vector3.Up);
-                projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 1, 0.1f, 5);
+                view = Matrix4x4.CreateLookAt(new Vector3(2f, 0.5f, 0), new Vector3(2, 0.5f, 1), Vector3.Up);
+                projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 1, 0.1f, 5);
                 frustum = new BoundingFrustum(view * projection);
 
                 yield return new TestCaseData(frustum, ContainmentType.Intersects);
 
                 // Frustum is entirely inside the box
-                view = Matrix.CreateLookAt(new Vector3(0.5f, 0.5f, 0.1f), new Vector3(0.5f, 0.5f, 0.3f), Vector3.Up);
-                projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 0.1f, 0.2f);
+                view = Matrix4x4.CreateLookAt(new Vector3(0.5f, 0.5f, 0.1f), new Vector3(0.5f, 0.5f, 0.3f), Vector3.Up);
+                projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 0.1f, 0.2f);
                 frustum = new BoundingFrustum(view * projection);
 
                 yield return new TestCaseData(frustum, ContainmentType.Contains);
 
                 // Camera is far away, looking at the box with farclip almost touching
-                view = Matrix.CreateLookAt(new Vector3(0.5f, 0.5f, -100), new Vector3(0.5f, 0.5f, 0.5f), Vector3.Up);
-                projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 1, 100 - 0.01f);
+                view = Matrix4x4.CreateLookAt(new Vector3(0.5f, 0.5f, -100), new Vector3(0.5f, 0.5f, 0.5f), Vector3.Up);
+                projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 1, 100 - 0.01f);
                 frustum = new BoundingFrustum(view * projection);
 
                 yield return new TestCaseData(frustum, ContainmentType.Disjoint);
 
                 // Left plane of frustum is almost touching corner of a box
-                view = Matrix.CreateLookAt(new Vector3(1.1f, 1.1f, 0.5f), new Vector3(1.1f, 1.1f, 1f), Vector3.Normalize(new Vector3(-1, 1, 0)));
-                projection = Matrix.CreatePerspectiveFieldOfView(MathF.Atan(0.5f), 1, 0.1f, 1.1f);
+                view = Matrix4x4.CreateLookAt(new Vector3(1.1f, 1.1f, 0.5f), new Vector3(1.1f, 1.1f, 1f), Vector3.Normalize(new Vector3(-1, 1, 0)));
+                projection = Matrix4x4.CreatePerspectiveFieldOfView(MathF.Atan(0.5f), 1, 0.1f, 1.1f);
                 frustum = new BoundingFrustum(view * projection);
 
                 yield return new TestCaseData(frustum, ContainmentType.Disjoint);
 
                 // Near plane of frustum offset by 45 deg is almost touching face of a box
-                view = Matrix.CreateLookAt(new Vector3(0.5f, 0, 0.5f), new Vector3(1f, 0.5f, 0.5f), new Vector3(-1, 1, 0));
+                view = Matrix4x4.CreateLookAt(new Vector3(0.5f, 0, 0.5f), new Vector3(1f, 0.5f, 0.5f), new Vector3(-1, 1, 0));
                 var cos1 = MathF.Cos((float)(MathF.PI / 16.0));
                 var cos2 = 1.0f / (2.0f * MathF.Cos((float)(5.0 * MathF.PI / 16.0)));
-                projection = Matrix.CreatePerspectiveFieldOfView(MathF.PI / 8.0f, 1, cos1 * cos2, 12);
+                projection = Matrix4x4.CreatePerspectiveFieldOfView(MathF.PI / 8.0f, 1, cos1 * cos2, 12);
                 frustum = new BoundingFrustum(view * projection);
 
                 yield return new TestCaseData(frustum, ContainmentType.Disjoint);
@@ -160,8 +161,8 @@ namespace MonoGame.Tests.Framework
         [Test]
         public void BoundingFrustumToBoundingBoxTests()
         {
-            var view = Matrix.CreateLookAt(new Vector3(0, 0, 5), Vector3.Zero, Vector3.Up);
-            var projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 1, 100);
+            var view = Matrix4x4.CreateLookAt(new Vector3(0, 0, 5), Vector3.Zero, Vector3.Up);
+            var projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 1, 100);
             var testFrustum = new BoundingFrustum(view * projection);
 
             var bbox1 = new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1));
@@ -184,19 +185,19 @@ namespace MonoGame.Tests.Framework
         [Test]
         public void BoundingFrustumToBoundingFrustumTests()
         {
-            var view = Matrix.CreateLookAt(new Vector3(0, 0, 5), Vector3.Zero, Vector3.Up);
-            var projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 1, 100);
+            var view = Matrix4x4.CreateLookAt(new Vector3(0, 0, 5), Vector3.Zero, Vector3.Up);
+            var projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 1, 100);
             var testFrustum = new BoundingFrustum(view * projection);
 
             // Same frustum.
             Assert.That(testFrustum.Contains(testFrustum), Is.EqualTo(ContainmentType.Contains));
             Assert.That(testFrustum.Intersects(testFrustum), Is.True);
 
-            var otherFrustum = new BoundingFrustum(Matrix.Identity);
+            var otherFrustum = new BoundingFrustum(Matrix4x4.Identity);
 
             // Smaller frustum contained entirely inside.
-            var view2 = Matrix.CreateLookAt(new Vector3(0, 0, 4), Vector3.Zero, Vector3.Up);
-            var projection2 = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 1, 50);
+            var view2 = Matrix4x4.CreateLookAt(new Vector3(0, 0, 4), Vector3.Zero, Vector3.Up);
+            var projection2 = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 1, 50);
             otherFrustum.Matrix = view2 * projection2;
 
             Assert.That(testFrustum.Contains(otherFrustum), Is.EqualTo(ContainmentType.Contains));
@@ -209,23 +210,23 @@ namespace MonoGame.Tests.Framework
             Assert.That(testFrustum.Intersects(otherFrustum), Is.True);
 
             // Same size frustum, pointing in the opposite direction and not overlapping.
-            var view3 = Matrix.CreateLookAt(new Vector3(0, 0, 6), new Vector3(0, 0, 7), Vector3.Up);
+            var view3 = Matrix4x4.CreateLookAt(new Vector3(0, 0, 6), new Vector3(0, 0, 7), Vector3.Up);
             otherFrustum.Matrix = view3 * projection;
 
             Assert.That(testFrustum.Contains(otherFrustum), Is.EqualTo(ContainmentType.Disjoint));
             Assert.That(testFrustum.Intersects(otherFrustum), Is.False);
 
             // Larger frustum, entirely containing test frustum.
-            var view4 = Matrix.CreateLookAt(new Vector3(0, 0, 10), Vector3.Zero, Vector3.Up);
-            var projection4 = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 1, 1000);
+            var view4 = Matrix4x4.CreateLookAt(new Vector3(0, 0, 10), Vector3.Zero, Vector3.Up);
+            var projection4 = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 1, 1000);
             otherFrustum.Matrix = view4 * projection4;
 
             Assert.That(testFrustum.Contains(otherFrustum), Is.EqualTo(ContainmentType.Intersects));
             Assert.That(testFrustum.Intersects(otherFrustum), Is.True);
 
             var bf =
-                new BoundingFrustum(Matrix.CreateLookAt(new Vector3(0, 1, 1), new Vector3(0, 0, 0), Vector3.Up) *
-                                    Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
+                new BoundingFrustum(Matrix4x4.CreateLookAt(new Vector3(0, 1, 1), new Vector3(0, 0, 0), Vector3.Up) *
+                                    Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
                                         1.3f, 0.1f, 1000.0f));
             var ray = new Ray(new Vector3(0, 0.5f, 0.5f), new Vector3(0, 0, 0));
             var ray2 = new Ray(new Vector3(0, 1.0f, 1.0f), new Vector3(0, 0, 0));

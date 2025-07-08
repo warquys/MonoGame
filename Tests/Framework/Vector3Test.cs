@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System.ComponentModel;
 using System.Globalization;
+using System.Numerics;
 
 namespace MonoGame.Tests.Framework
 {
@@ -59,7 +60,7 @@ namespace MonoGame.Tests.Framework
             var expectedResult2 = new Vector3(33, -14, -1);
 
             var v1 = new Vector3(1, 2, 3);
-            var m1 = new Matrix(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+            var m1 = new Matrix4x4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 
             var v2 = new Vector3(1, 2, 3);
             var q1 = new Quaternion(2, 3, 4, 5);

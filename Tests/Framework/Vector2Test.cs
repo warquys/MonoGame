@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System.ComponentModel;
 using System.Globalization;
+using System.Numerics;
 
 namespace MonoGame.Tests.Framework
 {
@@ -106,7 +107,7 @@ namespace MonoGame.Tests.Framework
             var expectedResult2 = new Vector2(-0.0168301091f, 2.30964f);
 
             var v1 = new Vector2(1, 2);
-            var m1 = new Matrix(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+            var m1 = new Matrix4x4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 
             var v2 = new Vector2(1.1f, 2.45f);
             var q2 = new Quaternion(0.11f, 0.22f, 0.33f, 0.55f);
@@ -247,7 +248,7 @@ namespace MonoGame.Tests.Framework
         public void TransformNormal()
         {
             var normal = new Vector2(1.5f, 2.5f);
-            var matrix = new Matrix(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+            var matrix = new Matrix4x4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 
             var expectedResult1 = new Vector2(14, 18);
             var expectedResult2 = expectedResult1;
@@ -418,13 +419,20 @@ namespace MonoGame.Tests.Framework
         [Test]
         public void ToPoint()
         {
-            Assert.AreEqual(new Point(0, 0), new Vector2(0.1f, 0.1f).ToPoint());
-            Assert.AreEqual(new Point(0, 0), new Vector2(0.5f, 0.5f).ToPoint());
-            Assert.AreEqual(new Point(0, 0), new Vector2(0.55f, 0.55f).ToPoint());
-            Assert.AreEqual(new Point(0, 0), new Vector2(1.0f - 0.1f, 1.0f - 0.1f).ToPoint());
-            Assert.AreEqual(new Point(1, 1), new Vector2(1.0f - float.Epsilon, 1.0f - float.Epsilon).ToPoint());
-            Assert.AreEqual(new Point(1, 1), new Vector2(1.0f, 1.0f).ToPoint());
-            Assert.AreEqual(new Point(19, 27), new Vector2(19.033f, 27.1f).ToPoint());
+            var vector2 = new Vector2(0.1f, 0.1f);
+            Assert.AreEqual(new Point(0, 0), vector2.ToPoint());
+            vector2 = new Vector2(0.5f, 0.5f);
+            Assert.AreEqual(new Point(0, 0), vector2.ToPoint());
+            vector2 = new Vector2(0.55f, 0.55f);
+            Assert.AreEqual(new Point(0, 0), vector2.ToPoint());
+            vector2 = new Vector2(1.0f - 0.1f, 1.0f - 0.1f);
+            Assert.AreEqual(new Point(0, 0), vector2.ToPoint());
+            vector2 = new Vector2(1.0f - float.Epsilon, 1.0f - float.Epsilon);
+            Assert.AreEqual(new Point(1, 1), vector2.ToPoint());
+            vector2 = new Vector2(1.0f, 1.0f);
+            Assert.AreEqual(new Point(1, 1), vector2.ToPoint());
+            vector2 = new Vector2(19.033f, 27.1f);
+            Assert.AreEqual(new Point(19, 27), vector2.ToPoint());
         }
 
         [Test]

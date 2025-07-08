@@ -590,6 +590,20 @@ public static class Vector2Extensions
         }
 
         /// <summary>
+        /// Apply transformation on all vectors within array of <see cref="Vector2"/> by the specified <see cref="Matrix"/> and places the results in an another array.
+        /// </summary>
+        /// <param name="sourceArray">Source array.</param>
+        /// <param name="matrix">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="destinationArray">Destination array.</param>
+        public static void Transform(
+            Vector2[] sourceArray,
+            ref Matrix matrix,
+            Vector2[] destinationArray)
+        {
+            Transform(sourceArray, 0, ref matrix, destinationArray, 0, sourceArray.Length);
+        }
+
+        /// <summary>
         /// Apply transformation on all vectors within array of <see cref="Vector2"/> by the specified <see cref="Quaternion"/> and places the results in an another array.
         /// </summary>
         /// <param name="sourceArray">Source array.</param>
@@ -787,6 +801,15 @@ public static class Vector2Extensions
         public Vector64<float> AsVector64()
         {
             return Unsafe.As<Vector2, Vector64<float>>(ref vector2);
+        }
+
+        /// <summary>
+        /// Gets a <see cref="Point"/> representation for this object.
+        /// </summary>
+        /// <returns>A <see cref="Point"/> representation for this object.</returns>
+        public Point ToPoint()
+        {
+            return new Point((int)vector2.X, (int)vector2.Y);
         }
     }
 

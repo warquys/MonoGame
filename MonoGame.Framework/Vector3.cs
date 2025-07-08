@@ -800,5 +800,17 @@ public static class Vector3Extensions
             }
         }
 
+        /// <summary>
+        /// Deconstruction method for <see cref="Vector3"/>.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        public void Deconstruct(out float x, out float y, out float z)
+        {
+            x = vector3.X;
+            y = vector3.Y;
+            z = vector3.Z;
+        }
     }
 }

@@ -200,8 +200,8 @@ namespace MonoGame.Tests.Components
 			background = Game.Content.Load<Texture2D>(Paths.Texture("fun-background"));
 
 			spaceship = new Spaceship();
-			spaceship.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(cameraFOV),
-				GraphicsDevice.Viewport.AspectRatio, 10, 20000);
+            spaceship.Projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.ToRadians(cameraFOV),
+                GraphicsDevice.Viewport.AspectRatio, 10, 20000);
 			spaceship.Load (Game.Content);
 
 

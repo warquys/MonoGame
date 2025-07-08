@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System.ComponentModel;
 using System.Globalization;
+using System.Numerics;
 
 namespace MonoGame.Tests.Framework
 {

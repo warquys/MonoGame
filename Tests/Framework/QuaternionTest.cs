@@ -28,7 +28,7 @@ namespace MonoGame.Tests.Framework
             // TODO: Create a static FromMethod
             Compare(expected, new Quaternion(new Vector3(1, 2, 3), 4));
 #if !XNA
-            Compare(expected, new Quaternion(new Vector4(1, 2, 3, 4)));
+            Compare(expected, Quaternion.FromVector4(new Vector4(1, 2, 3, 4)));
 #endif
         }
 

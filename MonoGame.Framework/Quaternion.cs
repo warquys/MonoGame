@@ -260,5 +260,14 @@ public static class QuaternionExtensions
             z = quaternion.Z;
             w = quaternion.W;
         }
+
+        /// <summary>
+        /// Constructs a quaternion from <see cref="Vector4"/>.
+        /// </summary>
+        /// <param name="vector">The x, y, z coordinates in 3d-space and the rotation component.</param>
+        public static Quaternion FromVector4(Vector4 vector)
+        {
+            return Unsafe.As<Vector4, Quaternion>(ref vector);
+        }
     }
 }
