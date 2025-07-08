@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using nVector2 = System.Numerics.Vector2;
 
 namespace Microsoft.Xna.Framework
 {
@@ -23,7 +24,8 @@ namespace Microsoft.Xna.Framework
         #endregion
 
         #region Public Fields
-
+        // ! DO NOT MOVE/ADD/REMOVE FIELDs, UNSAFE CAST IS USE
+        // see Unsafe.As
         /// <summary>
         /// The x coordinate of this <see cref="Point"/>.
         /// </summary>
@@ -167,6 +169,7 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="obj">The <see cref="Object"/> to compare.</param>
         /// <returns><c>true</c> if the instances are equal; <c>false</c> otherwise.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool Equals(object obj)
         {
             return (obj is Point) && Equals((Point)obj);
@@ -177,9 +180,10 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="other">The <see cref="Point"/> to compare.</param>
         /// <returns><c>true</c> if the instances are equal; <c>false</c> otherwise.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(Point other)
         {
-            return ((X == other.X) && (Y == other.Y));
+            return ToNumerics().Equals(other.ToNumerics());
         }
 
         /// <summary>
@@ -215,8 +219,18 @@ namespace Microsoft.Xna.Framework
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector2 ToVector2()
         {
-            return new Vector2(X, Y);
+            return Unsafe.As<Point, Vector2>(ref this);
         }
+
+        /// <summary>
+        /// Returns a <see cref="System.Numerics.Vector2"/>.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public nVector2 ToNumerics()
+        {
+            return Unsafe.As<Point, nVector2>(ref this);
+        }
+
 
         /// <summary>
         /// Deconstruction method for <see cref="Point"/>.

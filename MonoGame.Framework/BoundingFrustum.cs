@@ -557,10 +557,12 @@ namespace Microsoft.Xna.Framework
             Vector3.Cross(ref a.Normal, ref b.Normal, out cross);
             Vector3.Multiply(ref cross, c.D, out v3);
             //v3 = (c.D * (Vector3.Cross(a.Normal, b.Normal)));
-            
-            result.X = (v1.X + v2.X + v3.X) / f;
-            result.Y = (v1.Y + v2.Y + v3.Y) / f;
-            result.Z = (v1.Z + v2.Z + v3.Z) / f;
+
+            result = new Vector3(
+                (v1.X + v2.X + v3.X) / f,
+                (v1.Y + v2.Y + v3.Y) / f,
+                (v1.Z + v2.Z + v3.Z) / f
+            );
         }
         
         private void NormalizePlane(ref Plane p)

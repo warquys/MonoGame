@@ -258,8 +258,7 @@ namespace Microsoft.Xna.Framework.Graphics
                     finalLineHeight = pCurrentGlyph->Cropping.Height;
             }
 
-            size.X = width;
-            size.Y = offset.Y + finalLineHeight;
+            size = new Vector2(width, offset.Y + finalLineHeight);
 		}
         
         internal unsafe bool TryGetGlyphIndex(char c, out int index)

@@ -528,12 +528,12 @@ namespace Microsoft.Xna.Framework
         /// </param>
         public static void CreateMerged(ref BoundingBox original, ref BoundingBox additional, out BoundingBox result)
         {
-            result.Min.X = Math.Min(original.Min.X, additional.Min.X);
-            result.Min.Y = Math.Min(original.Min.Y, additional.Min.Y);
-            result.Min.Z = Math.Min(original.Min.Z, additional.Min.Z);
-            result.Max.X = Math.Max(original.Max.X, additional.Max.X);
-            result.Max.Y = Math.Max(original.Max.Y, additional.Max.Y);
-            result.Max.Z = Math.Max(original.Max.Z, additional.Max.Z);
+            result.Min = new Vector3(Math.Min(original.Min.X, additional.Min.X),
+                                     Math.Min(original.Min.Y, additional.Min.Y),
+                                     Math.Min(original.Min.Z, additional.Min.Z));
+            result.Max = new Vector3(Math.Max(original.Max.X, additional.Max.X),
+                                     Math.Max(original.Max.Y, additional.Max.Y),
+                                     Math.Max(original.Max.Z, additional.Max.Z));
         }
 
         /// <summary>

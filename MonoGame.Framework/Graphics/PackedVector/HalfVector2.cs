@@ -53,10 +53,10 @@ namespace Microsoft.Xna.Framework.Graphics.PackedVector
         /// <returns>The expanded value.</returns>
         public Vector2 ToVector2()
         {
-            Vector2 vector;
-            vector.X = HalfTypeHelper.Convert((ushort)this.packedValue);
-            vector.Y = HalfTypeHelper.Convert((ushort)(this.packedValue >> 0x10));
-            return vector;
+            return new Vector2(
+                HalfTypeHelper.Convert((ushort)this.packedValue),
+                HalfTypeHelper.Convert((ushort)(this.packedValue >> 0x10))
+                );
         }
 
         /// <inheritdoc />

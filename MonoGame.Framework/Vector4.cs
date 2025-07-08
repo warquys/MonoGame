@@ -3,8 +3,12 @@
 // file 'LICENSE.txt', which is part of this source code package.
 
 using System;
-using System.Runtime.Serialization;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
+using System.Runtime.Serialization;
+using nVector4 = System.Numerics.Vector4;
 
 namespace Microsoft.Xna.Framework
 {
@@ -16,6 +20,7 @@ namespace Microsoft.Xna.Framework
 #endif
     [DataContract]
     [DebuggerDisplay("{DebugDisplayString,nq}")]
+    [StructLayout(LayoutKind.Explicit, Size = 16)]
     public struct Vector4 : IEquatable<Vector4>
     {
         #region Private Fields
@@ -31,28 +36,33 @@ namespace Microsoft.Xna.Framework
 
         #region Public Fields
 
+        [IgnoreDataMember, FieldOffset(0)]
+        internal Vector128<float> vvimp;
+        [IgnoreDataMember, FieldOffset(0)]
+        internal nVector4 nvimp;
+
         /// <summary>
         /// The x coordinate of this <see cref="Vector4"/>.
         /// </summary>
-        [DataMember]
+        [DataMember, FieldOffset(sizeof(float) * 0)]
         public float X;
 
         /// <summary>
         /// The y coordinate of this <see cref="Vector4"/>.
         /// </summary>
-        [DataMember]
+        [DataMember, FieldOffset(sizeof(float) * 1)]
         public float Y;
 
         /// <summary>
         /// The z coordinate of this <see cref="Vector4"/>.
         /// </summary>
-        [DataMember]
+        [DataMember, FieldOffset(sizeof(float) * 2)]
         public float Z;
 
         /// <summary>
         /// The w coordinate of this <see cref="Vector4"/>.
         /// </summary>
-        [DataMember]
+        [DataMember, FieldOffset(sizeof(float) * 4)]
         public float W;
 
         #endregion
@@ -137,6 +147,7 @@ namespace Microsoft.Xna.Framework
         /// <param name="w">The w coordinate in 4d-space.</param>
         public Vector4(float x, float y, float z, float w)
         {
+            Unsafe.SkipInit(out this); // Skip init to not init vvimp and nvimp
             this.X = x;
             this.Y = y;
             this.Z = z;
@@ -151,6 +162,7 @@ namespace Microsoft.Xna.Framework
         /// <param name="w">The w coordinate in 4d-space.</param>
         public Vector4(Vector2 value, float z, float w)
         {
+            Unsafe.SkipInit(out this);
             this.X = value.X;
             this.Y = value.Y;
             this.Z = z;
@@ -164,6 +176,7 @@ namespace Microsoft.Xna.Framework
         /// <param name="w">The w coordinate in 4d-space.</param>
         public Vector4(Vector3 value, float w)
         {
+            Unsafe.SkipInit(out this);
             this.X = value.X;
             this.Y = value.Y;
             this.Z = value.Z;
@@ -176,10 +189,23 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">The x, y, z and w coordinates in 4d-space.</param>
         public Vector4(float value)
         {
+            Unsafe.SkipInit(out this);
             this.X = value;
             this.Y = value;
             this.Z = value;
             this.W = value;
+        }
+
+        internal Vector4(nVector4 vector4)
+        {
+            Unsafe.SkipInit(out this);
+            this.nvimp = vector4;
+        }
+
+        internal Vector4(Vector128<float> vector128)
+        {
+            Unsafe.SkipInit(out this);
+            this.vvimp = vector128;
         }
 
         #endregion
@@ -192,13 +218,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">The first vector to add.</param>
         /// <param name="value2">The second vector to add.</param>
         /// <returns>The result of the vector addition.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Add(Vector4 value1, Vector4 value2)
         {
-            value1.X += value2.X;
-            value1.Y += value2.Y;
-            value1.Z += value2.Z;
-            value1.W += value2.W;
-            return value1;
+            return value1 + value2;
         }
 
         /// <summary>
@@ -209,12 +232,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">The first vector to add.</param>
         /// <param name="value2">The second vector to add.</param>
         /// <param name="result">The result of the vector addition.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Add(ref Vector4 value1, ref Vector4 value2, out Vector4 result)
         {
-            result.X = value1.X + value2.X;
-            result.Y = value1.Y + value2.Y;
-            result.Z = value1.Z + value2.Z;
-            result.W = value1.W + value2.W;
+            result = value1 + value2;
         }
 
         /// <summary>
@@ -246,6 +267,7 @@ namespace Microsoft.Xna.Framework
         /// <param name="result">The cartesian translation of barycentric coordinates as an output parameter.</param>
         public static void Barycentric(ref Vector4 value1, ref Vector4 value2, ref Vector4 value3, float amount1, float amount2, out Vector4 result)
         {
+            Unsafe.SkipInit(out result);
             result.X = MathHelper.Barycentric(value1.X, value2.X, value3.X, amount1, amount2);
             result.Y = MathHelper.Barycentric(value1.Y, value2.Y, value3.Y, amount1, amount2);
             result.Z = MathHelper.Barycentric(value1.Z, value2.Z, value3.Z, amount1, amount2);
@@ -281,6 +303,7 @@ namespace Microsoft.Xna.Framework
         /// <param name="result">The result of CatmullRom interpolation as an output parameter.</param>
         public static void CatmullRom(ref Vector4 value1, ref Vector4 value2, ref Vector4 value3, ref Vector4 value4, float amount, out Vector4 result)
         {
+            Unsafe.SkipInit(out result);
             result.X = MathHelper.CatmullRom(value1.X, value2.X, value3.X, value4.X, amount);
             result.Y = MathHelper.CatmullRom(value1.Y, value2.Y, value3.Y, value4.Y, amount);
             result.Z = MathHelper.CatmullRom(value1.Z, value2.Z, value3.Z, value4.Z, amount);
@@ -290,12 +313,10 @@ namespace Microsoft.Xna.Framework
         /// <summary>
         /// Round the members of this <see cref="Vector4"/> towards positive infinity.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Ceiling()
         {
-            X = MathF.Ceiling(X);
-            Y = MathF.Ceiling(Y);
-            Z = MathF.Ceiling(Z);
-            W = MathF.Ceiling(W);
+            vvimp = Vector128.Ceiling(vvimp);
         }
 
         /// <summary>
@@ -303,12 +324,10 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="value">Source <see cref="Vector4"/>.</param>
         /// <returns>The rounded <see cref="Vector4"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Ceiling(Vector4 value)
         {
-            value.X = MathF.Ceiling(value.X);
-            value.Y = MathF.Ceiling(value.Y);
-            value.Z = MathF.Ceiling(value.Z);
-            value.W = MathF.Ceiling(value.W);
+            value.vvimp = Vector128.Ceiling(value.vvimp);
             return value;
         }
 
@@ -317,12 +336,11 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="value">Source <see cref="Vector4"/>.</param>
         /// <param name="result">The rounded <see cref="Vector4"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Ceiling(ref Vector4 value, out Vector4 result)
         {
-            result.X = MathF.Ceiling(value.X);
-            result.Y = MathF.Ceiling(value.Y);
-            result.Z = MathF.Ceiling(value.Z);
-            result.W = MathF.Ceiling(value.W);
+            Unsafe.SkipInit(out result);
+            result.vvimp = Vector128.Ceiling(value.vvimp);
         }
 
         /// <summary>
@@ -332,13 +350,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="min">The min value.</param>
         /// <param name="max">The max value.</param>
         /// <returns>The clamped value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Clamp(Vector4 value1, Vector4 min, Vector4 max)
         {
-            return new Vector4(
-                MathHelper.Clamp(value1.X, min.X, max.X),
-                MathHelper.Clamp(value1.Y, min.Y, max.Y),
-                MathHelper.Clamp(value1.Z, min.Z, max.Z),
-                MathHelper.Clamp(value1.W, min.W, max.W));
+            return nVector4.Clamp(value1.nvimp, min.nvimp, max.nvimp);
         }
 
         /// <summary>
@@ -348,12 +363,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="min">The min value.</param>
         /// <param name="max">The max value.</param>
         /// <param name="result">The clamped value as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Clamp(ref Vector4 value1, ref Vector4 min, ref Vector4 max, out Vector4 result)
         {
-            result.X = MathHelper.Clamp(value1.X, min.X, max.X);
-            result.Y = MathHelper.Clamp(value1.Y, min.Y, max.Y);
-            result.Z = MathHelper.Clamp(value1.Z, min.Z, max.Z);
-            result.W = MathHelper.Clamp(value1.W, min.W, max.W);
+            result = nVector4.Clamp(value1.nvimp, min.nvimp, max.nvimp);
         }
 
         /// <summary>
@@ -362,9 +375,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">The first vector.</param>
         /// <param name="value2">The second vector.</param>
         /// <returns>The distance between two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Distance(Vector4 value1, Vector4 value2)
         {
-            return MathF.Sqrt(DistanceSquared(value1, value2));
+            return nVector4.Distance(value1.nvimp, value2.nvimp);
         }
 
         /// <summary>
@@ -373,9 +387,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">The first vector.</param>
         /// <param name="value2">The second vector.</param>
         /// <param name="result">The distance between two vectors as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Distance(ref Vector4 value1, ref Vector4 value2, out float result)
         {
-            result = MathF.Sqrt(DistanceSquared(value1, value2));
+            result = nVector4.Distance(value1.nvimp, value2.nvimp);
         }
 
         /// <summary>
@@ -384,12 +399,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">The first vector.</param>
         /// <param name="value2">The second vector.</param>
         /// <returns>The squared distance between two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float DistanceSquared(Vector4 value1, Vector4 value2)
         {
-              return (value1.W - value2.W) * (value1.W - value2.W) +
-                     (value1.X - value2.X) * (value1.X - value2.X) +
-                     (value1.Y - value2.Y) * (value1.Y - value2.Y) +
-                     (value1.Z - value2.Z) * (value1.Z - value2.Z);
+              return nVector4.DistanceSquared(value1.nvimp, value2.nvimp);
         }
 
         /// <summary>
@@ -398,12 +411,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">The first vector.</param>
         /// <param name="value2">The second vector.</param>
         /// <param name="result">The squared distance between two vectors as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DistanceSquared(ref Vector4 value1, ref Vector4 value2, out float result)
         {
-            result = (value1.W - value2.W) * (value1.W - value2.W) +
-                     (value1.X - value2.X) * (value1.X - value2.X) +
-                     (value1.Y - value2.Y) * (value1.Y - value2.Y) +
-                     (value1.Z - value2.Z) * (value1.Z - value2.Z);
+            result = nVector4.DistanceSquared(value1.nvimp, value2.nvimp);
         }
 
         /// <summary>
@@ -412,13 +423,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/>.</param>
         /// <param name="value2">Divisor <see cref="Vector4"/>.</param>
         /// <returns>The result of dividing the vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Divide(Vector4 value1, Vector4 value2)
         {
-            value1.W /= value2.W;
-            value1.X /= value2.X;
-            value1.Y /= value2.Y;
-            value1.Z /= value2.Z;
-            return value1;
+            return value1 / value2;
         }
 
         /// <summary>
@@ -427,14 +435,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/>.</param>
         /// <param name="divider">Divisor scalar.</param>
         /// <returns>The result of dividing a vector by a scalar.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Divide(Vector4 value1, float divider)
         {
-            float factor = 1f / divider;
-            value1.W *= factor;
-            value1.X *= factor;
-            value1.Y *= factor;
-            value1.Z *= factor;
-            return value1;
+            return value1 / divider;
         }
 
         /// <summary>
@@ -443,13 +447,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/>.</param>
         /// <param name="divider">Divisor scalar.</param>
         /// <param name="result">The result of dividing a vector by a scalar as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Divide(ref Vector4 value1, float divider, out Vector4 result)
         {
-            float factor = 1f / divider;
-            result.W = value1.W * factor;
-            result.X = value1.X * factor;
-            result.Y = value1.Y * factor;
-            result.Z = value1.Z * factor;
+            result = value1 / divider;
         }
 
         /// <summary>
@@ -458,12 +459,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/>.</param>
         /// <param name="value2">Divisor <see cref="Vector4"/>.</param>
         /// <param name="result">The result of dividing the vectors as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Divide(ref Vector4 value1, ref Vector4 value2, out Vector4 result)
         {
-            result.W = value1.W / value2.W;
-            result.X = value1.X / value2.X;
-            result.Y = value1.Y / value2.Y;
-            result.Z = value1.Z / value2.Z;
+            result = value1 / value2;
         }
 
         /// <summary>
@@ -472,9 +471,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">The first vector.</param>
         /// <param name="value2">The second vector.</param>
         /// <returns>The dot product of two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Dot(Vector4 value1, Vector4 value2)
         {
-            return value1.X * value2.X + value1.Y * value2.Y + value1.Z * value2.Z + value1.W * value2.W;
+            return nVector4.Dot(value1.nvimp, value2.nvimp);
         }
 
         /// <summary>
@@ -483,9 +483,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">The first vector.</param>
         /// <param name="value2">The second vector.</param>
         /// <param name="result">The dot product of two vectors as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Dot(ref Vector4 value1, ref Vector4 value2, out float result)
         {
-            result = value1.X * value2.X + value1.Y * value2.Y + value1.Z * value2.Z + value1.W * value2.W;
+            result = nVector4.Dot(value1.nvimp, value2.nvimp);
         }
 
         /// <summary>
@@ -495,7 +496,10 @@ namespace Microsoft.Xna.Framework
         /// <returns><c>true</c> if the instances are equal; <c>false</c> otherwise.</returns>
         public override bool Equals(object obj)
         {
-            return (obj is Vector4) ? this == (Vector4)obj : false;
+            if (obj is Vector4 vector4)
+                return Equals(vector4);
+
+            return false;
         }
 
         /// <summary>
@@ -503,23 +507,19 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="other">The <see cref="Vector4"/> to compare.</param>
         /// <returns><c>true</c> if the instances are equal; <c>false</c> otherwise.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(Vector4 other)
         {
-            return this.W == other.W
-                && this.X == other.X
-                && this.Y == other.Y
-                && this.Z == other.Z;
+            return nvimp == other.nvimp;
         }
 
         /// <summary>
         /// Round the members of this <see cref="Vector4"/> towards negative infinity.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Floor()
         {
-            X = MathF.Floor(X);
-            Y = MathF.Floor(Y);
-            Z = MathF.Floor(Z);
-            W = MathF.Floor(W);
+            vvimp = Vector128.Floor(vvimp);
         }
 
         /// <summary>
@@ -527,12 +527,10 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="value">Source <see cref="Vector4"/>.</param>
         /// <returns>The rounded <see cref="Vector4"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Floor(Vector4 value)
         {
-            value.X = MathF.Floor(value.X);
-            value.Y = MathF.Floor(value.Y);
-            value.Z = MathF.Floor(value.Z);
-            value.W = MathF.Floor(value.W);
+            value.vvimp = Vector128.Floor(value.vvimp);
             return value;
         }
 
@@ -541,12 +539,11 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="value">Source <see cref="Vector4"/>.</param>
         /// <param name="result">The rounded <see cref="Vector4"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Floor(ref Vector4 value, out Vector4 result)
         {
-            result.X = MathF.Floor(value.X);
-            result.Y = MathF.Floor(value.Y);
-            result.Z = MathF.Floor(value.Z);
-            result.W = MathF.Floor(value.W);
+            Unsafe.SkipInit(out result);
+            result.vvimp = Vector128.Floor(value.vvimp);
         }
 
         /// <summary>
@@ -593,6 +590,7 @@ namespace Microsoft.Xna.Framework
         /// <param name="result">The hermite spline interpolation vector as an output parameter.</param>
         public static void Hermite(ref Vector4 value1, ref Vector4 tangent1, ref Vector4 value2, ref Vector4 tangent2, float amount, out Vector4 result)
         {
+            Unsafe.SkipInit(out result);
             result.W = MathHelper.Hermite(value1.W, tangent1.W, value2.W, tangent2.W, amount);
             result.X = MathHelper.Hermite(value1.X, tangent1.X, value2.X, tangent2.X, amount);
             result.Y = MathHelper.Hermite(value1.Y, tangent1.Y, value2.Y, tangent2.Y, amount);
@@ -603,18 +601,20 @@ namespace Microsoft.Xna.Framework
         /// Returns the length of this <see cref="Vector4"/>.
         /// </summary>
         /// <returns>The length of this <see cref="Vector4"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Length()
         {
-            return MathF.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
+            return nvimp.Length();
         }
 
         /// <summary>
         /// Returns the squared length of this <see cref="Vector4"/>.
         /// </summary>
         /// <returns>The squared length of this <see cref="Vector4"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float LengthSquared()
         {
-            return (X * X) + (Y * Y) + (Z * Z) + (W * W);
+            return nvimp.LengthSquared();
         }
 
         /// <summary>
@@ -642,6 +642,7 @@ namespace Microsoft.Xna.Framework
         /// <param name="result">The result of linear interpolation of the specified vectors as an output parameter.</param>
         public static void Lerp(ref Vector4 value1, ref Vector4 value2, float amount, out Vector4 result)
         {
+            Unsafe.SkipInit(out result);
             result.X = MathHelper.Lerp(value1.X, value2.X, amount);
             result.Y = MathHelper.Lerp(value1.Y, value2.Y, amount);
             result.Z = MathHelper.Lerp(value1.Z, value2.Z, amount);
@@ -658,13 +659,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value2">The second vector.</param>
         /// <param name="amount">Weighting value(between 0.0 and 1.0).</param>
         /// <returns>The result of linear interpolation of the specified vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 LerpPrecise(Vector4 value1, Vector4 value2, float amount)
         {
-            return new Vector4(
-                MathHelper.LerpPrecise(value1.X, value2.X, amount),
-                MathHelper.LerpPrecise(value1.Y, value2.Y, amount),
-                MathHelper.LerpPrecise(value1.Z, value2.Z, amount),
-                MathHelper.LerpPrecise(value1.W, value2.W, amount));
+            return nVector4.Lerp(value1.nvimp, value2.nvimp, amount);
         }
 
         /// <summary>
@@ -677,12 +675,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value2">The second vector.</param>
         /// <param name="amount">Weighting value(between 0.0 and 1.0).</param>
         /// <param name="result">The result of linear interpolation of the specified vectors as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void LerpPrecise(ref Vector4 value1, ref Vector4 value2, float amount, out Vector4 result)
         {
-            result.X = MathHelper.LerpPrecise(value1.X, value2.X, amount);
-            result.Y = MathHelper.LerpPrecise(value1.Y, value2.Y, amount);
-            result.Z = MathHelper.LerpPrecise(value1.Z, value2.Z, amount);
-            result.W = MathHelper.LerpPrecise(value1.W, value2.W, amount);
+            result = nVector4.Lerp(value1.nvimp, value2.nvimp, amount);
         }
 
         /// <summary>
@@ -691,13 +687,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">The first vector.</param>
         /// <param name="value2">The second vector.</param>
         /// <returns>The <see cref="Vector4"/> with maximal values from the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Max(Vector4 value1, Vector4 value2)
         {
-            return new Vector4(
-               MathHelper.Max(value1.X, value2.X),
-               MathHelper.Max(value1.Y, value2.Y),
-               MathHelper.Max(value1.Z, value2.Z),
-               MathHelper.Max(value1.W, value2.W));
+            return nVector4.Max(value1.nvimp, value2.nvimp);
         }
 
         /// <summary>
@@ -706,12 +699,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">The first vector.</param>
         /// <param name="value2">The second vector.</param>
         /// <param name="result">The <see cref="Vector4"/> with maximal values from the two vectors as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Max(ref Vector4 value1, ref Vector4 value2, out Vector4 result)
         {
-            result.X = MathHelper.Max(value1.X, value2.X);
-            result.Y = MathHelper.Max(value1.Y, value2.Y);
-            result.Z = MathHelper.Max(value1.Z, value2.Z);
-            result.W = MathHelper.Max(value1.W, value2.W);
+            result = nVector4.Max(value1.nvimp, value2.nvimp);
         }
 
         /// <summary>
@@ -720,13 +711,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">The first vector.</param>
         /// <param name="value2">The second vector.</param>
         /// <returns>The <see cref="Vector4"/> with minimal values from the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Min(Vector4 value1, Vector4 value2)
         {
-            return new Vector4(
-               MathHelper.Min(value1.X, value2.X),
-               MathHelper.Min(value1.Y, value2.Y),
-               MathHelper.Min(value1.Z, value2.Z),
-               MathHelper.Min(value1.W, value2.W));
+            return nVector4.Min(value1.nvimp, value2.nvimp);
         }
 
         /// <summary>
@@ -735,12 +723,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">The first vector.</param>
         /// <param name="value2">The second vector.</param>
         /// <param name="result">The <see cref="Vector4"/> with minimal values from the two vectors as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Min(ref Vector4 value1, ref Vector4 value2, out Vector4 result)
         {
-            result.X = MathHelper.Min(value1.X, value2.X);
-            result.Y = MathHelper.Min(value1.Y, value2.Y);
-            result.Z = MathHelper.Min(value1.Z, value2.Z);
-            result.W = MathHelper.Min(value1.W, value2.W);
+            result = nVector4.Min(value1.nvimp, value2.nvimp);
         }
 
         /// <summary>
@@ -749,13 +735,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/>.</param>
         /// <param name="value2">Source <see cref="Vector4"/>.</param>
         /// <returns>The result of the vector multiplication.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Multiply(Vector4 value1, Vector4 value2)
         {
-            value1.W *= value2.W;
-            value1.X *= value2.X;
-            value1.Y *= value2.Y;
-            value1.Z *= value2.Z;
-            return value1;
+            return value1 * value2;
         }
 
         /// <summary>
@@ -764,13 +747,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/>.</param>
         /// <param name="scaleFactor">Scalar value.</param>
         /// <returns>The result of the vector multiplication with a scalar.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Multiply(Vector4 value1, float scaleFactor)
         {
-            value1.W *= scaleFactor;
-            value1.X *= scaleFactor;
-            value1.Y *= scaleFactor;
-            value1.Z *= scaleFactor;
-            return value1;
+            return value1 * scaleFactor;
         }
 
         /// <summary>
@@ -779,12 +759,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/>.</param>
         /// <param name="scaleFactor">Scalar value.</param>
         /// <param name="result">The result of the multiplication with a scalar as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Multiply(ref Vector4 value1, float scaleFactor, out Vector4 result)
         {
-            result.W = value1.W * scaleFactor;
-            result.X = value1.X * scaleFactor;
-            result.Y = value1.Y * scaleFactor;
-            result.Z = value1.Z * scaleFactor;
+            result = value1 * scaleFactor;
         }
 
         /// <summary>
@@ -793,12 +771,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/>.</param>
         /// <param name="value2">Source <see cref="Vector4"/>.</param>
         /// <param name="result">The result of the vector multiplication as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Multiply(ref Vector4 value1, ref Vector4 value2, out Vector4 result)
         {
-            result.W = value1.W * value2.W;
-            result.X = value1.X * value2.X;
-            result.Y = value1.Y * value2.Y;
-            result.Z = value1.Z * value2.Z;
+            result = value1 * value2;
         }
 
         /// <summary>
@@ -806,10 +782,10 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="value">Source <see cref="Vector4"/>.</param>
         /// <returns>The result of the vector inversion.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Negate(Vector4 value)
         {
-            value = new Vector4(-value.X, -value.Y, -value.Z, -value.W);
-            return value;
+            return -value;
         }
 
         /// <summary>
@@ -817,25 +793,19 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="value">Source <see cref="Vector4"/>.</param>
         /// <param name="result">The result of the vector inversion as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Negate(ref Vector4 value, out Vector4 result)
         {
-            result.X = -value.X;
-            result.Y = -value.Y;
-            result.Z = -value.Z;
-            result.W = -value.W;
+            result = -value;
         }
 
         /// <summary>
         /// Turns this <see cref="Vector4"/> to a unit vector with the same direction.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Normalize()
         {
-            float factor = MathF.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
-            factor = 1f / factor;
-            X *= factor;
-            Y *= factor;
-            Z *= factor;
-            W *= factor;
+            nvimp = nVector4.Normalize(nvimp);
         }
 
         /// <summary>
@@ -843,11 +813,10 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="value">Source <see cref="Vector4"/>.</param>
         /// <returns>Unit vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Normalize(Vector4 value)
         {
-            float factor = MathF.Sqrt((value.X * value.X) + (value.Y * value.Y) + (value.Z * value.Z) + (value.W * value.W));
-            factor = 1f / factor;
-            return new Vector4(value.X*factor,value.Y*factor,value.Z*factor,value.W*factor);
+           return nVector4.Normalize(value.nvimp);
         }
 
         /// <summary>
@@ -855,14 +824,10 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="value">Source <see cref="Vector4"/>.</param>
         /// <param name="result">Unit vector as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Normalize(ref Vector4 value, out Vector4 result)
         {
-            float factor = MathF.Sqrt((value.X * value.X) + (value.Y * value.Y) + (value.Z * value.Z) + (value.W * value.W));
-            factor = 1f / factor;
-            result.W = value.W * factor;
-            result.X = value.X * factor;
-            result.Y = value.Y * factor;
-            result.Z = value.Z * factor;
+            result = nVector4.Normalize(value.nvimp);
         }
 
         /// <summary>
@@ -897,6 +862,7 @@ namespace Microsoft.Xna.Framework
         /// <param name="result">The rounded <see cref="Vector4"/>.</param>
         public static void Round(ref Vector4 value, out Vector4 result)
         {
+            Unsafe.SkipInit(out result);
             result.X = MathF.Round(value.X);
             result.Y = MathF.Round(value.Y);
             result.Z = MathF.Round(value.Z);
@@ -928,6 +894,7 @@ namespace Microsoft.Xna.Framework
         /// <param name="result">Cubic interpolation of the specified vectors as an output parameter.</param>
         public static void SmoothStep(ref Vector4 value1, ref Vector4 value2, float amount, out Vector4 result)
         {
+            Unsafe.SkipInit(out result);
             result.X = MathHelper.SmoothStep(value1.X, value2.X, amount);
             result.Y = MathHelper.SmoothStep(value1.Y, value2.Y, amount);
             result.Z = MathHelper.SmoothStep(value1.Z, value2.Z, amount);
@@ -940,13 +907,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/>.</param>
         /// <param name="value2">Source <see cref="Vector4"/>.</param>
         /// <returns>The result of the vector subtraction.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Subtract(Vector4 value1, Vector4 value2)
         {
-            value1.W -= value2.W;
-            value1.X -= value2.X;
-            value1.Y -= value2.Y;
-            value1.Z -= value2.Z;
-            return value1;
+            return value1 - value2;
         }
 
         /// <summary>
@@ -955,12 +919,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/>.</param>
         /// <param name="value2">Source <see cref="Vector4"/>.</param>
         /// <param name="result">The result of the vector subtraction as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Subtract(ref Vector4 value1, ref Vector4 value2, out Vector4 result)
         {
-            result.W = value1.W - value2.W;
-            result.X = value1.X - value2.X;
-            result.Y = value1.Y - value2.Y;
-            result.Z = value1.Z - value2.Z;
+            result = value1 - value2;
         }
 
         #region Transform
@@ -971,11 +933,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">Source <see cref="Vector2"/>.</param>
         /// <param name="matrix">The transformation <see cref="Matrix"/>.</param>
         /// <returns>Transformed <see cref="Vector4"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Transform(Vector2 value, Matrix matrix)
         {
-            Vector4 result;
-            Transform(ref value, ref matrix, out result);
-            return result;
+            return nVector4.Transform(value.nvimp, matrix.nmimp);
         }
 
         /// <summary>
@@ -984,11 +945,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">Source <see cref="Vector2"/>.</param>
         /// <param name="rotation">The <see cref="Quaternion"/> which contains rotation transformation.</param>
         /// <returns>Transformed <see cref="Vector4"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Transform(Vector2 value, Quaternion rotation)
         {
-            Vector4 result;
-            Transform(ref value, ref rotation, out result);
-            return result;
+            return nVector4.Transform(value.nvimp, rotation.nqimp);
         }
 
         /// <summary>
@@ -997,11 +957,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">Source <see cref="Vector3"/>.</param>
         /// <param name="matrix">The transformation <see cref="Matrix"/>.</param>
         /// <returns>Transformed <see cref="Vector4"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Transform(Vector3 value, Matrix matrix)
         {
-            Vector4 result;
-            Transform(ref value, ref matrix, out result);
-            return result;
+            return nVector4.Transform(value.nvimp, matrix.nmimp);
         }
 
         /// <summary>
@@ -1010,11 +969,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">Source <see cref="Vector3"/>.</param>
         /// <param name="rotation">The <see cref="Quaternion"/> which contains rotation transformation.</param>
         /// <returns>Transformed <see cref="Vector4"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Transform(Vector3 value, Quaternion rotation)
         {
-            Vector4 result;
-            Transform(ref value, ref rotation, out result);
-            return result;
+            return nVector4.Transform(value.nvimp, rotation.nqimp);
         }
 
         /// <summary>
@@ -1023,10 +981,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">Source <see cref="Vector4"/>.</param>
         /// <param name="matrix">The transformation <see cref="Matrix"/>.</param>
         /// <returns>Transformed <see cref="Vector4"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Transform(Vector4 value, Matrix matrix)
         {
-            Transform(ref value, ref matrix, out value);
-            return value;
+            return nVector4.Transform(value.nvimp, matrix.nmimp);
         }
 
         /// <summary>
@@ -1035,11 +993,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">Source <see cref="Vector4"/>.</param>
         /// <param name="rotation">The <see cref="Quaternion"/> which contains rotation transformation.</param>
         /// <returns>Transformed <see cref="Vector4"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Transform(Vector4 value, Quaternion rotation)
         {
-            Vector4 result;
-            Transform(ref value, ref rotation, out result);
-            return result;
+            return nVector4.Transform(value.nvimp, rotation.nqimp);
         }
 
         /// <summary>
@@ -1048,12 +1005,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">Source <see cref="Vector2"/>.</param>
         /// <param name="matrix">The transformation <see cref="Matrix"/>.</param>
         /// <param name="result">Transformed <see cref="Vector4"/> as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Transform(ref Vector2 value, ref Matrix matrix, out Vector4 result)
         {
-            result.X = (value.X * matrix.M11) + (value.Y * matrix.M21) + matrix.M41;
-            result.Y = (value.X * matrix.M12) + (value.Y * matrix.M22) + matrix.M42;
-            result.Z = (value.X * matrix.M13) + (value.Y * matrix.M23) + matrix.M43;
-            result.W = (value.X * matrix.M14) + (value.Y * matrix.M24) + matrix.M44;
+            result = nVector4.Transform(value.nvimp, matrix.nmimp);
         }
 
         /// <summary>
@@ -1062,9 +1017,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">Source <see cref="Vector2"/>.</param>
         /// <param name="rotation">The <see cref="Quaternion"/> which contains rotation transformation.</param>
         /// <param name="result">Transformed <see cref="Vector4"/> as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Transform(ref Vector2 value, ref Quaternion rotation, out Vector4 result)
         {
-            throw new NotImplementedException();
+            result = nVector4.Transform(value.nvimp, rotation.nqimp);
         }
 
         /// <summary>
@@ -1073,12 +1029,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">Source <see cref="Vector3"/>.</param>
         /// <param name="matrix">The transformation <see cref="Matrix"/>.</param>
         /// <param name="result">Transformed <see cref="Vector4"/> as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Transform(ref Vector3 value, ref Matrix matrix, out Vector4 result)
         {
-            result.X = (value.X * matrix.M11) + (value.Y * matrix.M21) + (value.Z * matrix.M31) + matrix.M41;
-            result.Y = (value.X * matrix.M12) + (value.Y * matrix.M22) + (value.Z * matrix.M32) + matrix.M42;
-            result.Z = (value.X * matrix.M13) + (value.Y * matrix.M23) + (value.Z * matrix.M33) + matrix.M43;
-            result.W = (value.X * matrix.M14) + (value.Y * matrix.M24) + (value.Z * matrix.M34) + matrix.M44;
+            result = nVector4.Transform(value.nvimp, matrix.nmimp);
         }
 
         /// <summary>
@@ -1087,9 +1041,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">Source <see cref="Vector3"/>.</param>
         /// <param name="rotation">The <see cref="Quaternion"/> which contains rotation transformation.</param>
         /// <param name="result">Transformed <see cref="Vector4"/> as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Transform(ref Vector3 value, ref Quaternion rotation, out Vector4 result)
         {
-            throw new NotImplementedException();
+            result = nVector4.Transform(value.nvimp, rotation.nqimp);
         }
 
         /// <summary>
@@ -1098,16 +1053,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">Source <see cref="Vector4"/>.</param>
         /// <param name="matrix">The transformation <see cref="Matrix"/>.</param>
         /// <param name="result">Transformed <see cref="Vector4"/> as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Transform(ref Vector4 value, ref Matrix matrix, out Vector4 result)
         {
-            var x = (value.X * matrix.M11) + (value.Y * matrix.M21) + (value.Z * matrix.M31) + (value.W * matrix.M41);
-            var y = (value.X * matrix.M12) + (value.Y * matrix.M22) + (value.Z * matrix.M32) + (value.W * matrix.M42);
-            var z = (value.X * matrix.M13) + (value.Y * matrix.M23) + (value.Z * matrix.M33) + (value.W * matrix.M43);
-            var w = (value.X * matrix.M14) + (value.Y * matrix.M24) + (value.Z * matrix.M34) + (value.W * matrix.M44);
-            result.X = x;
-            result.Y = y;
-            result.Z = z;
-            result.W = w;
+            result = nVector4.Transform(value.nvimp, matrix.nmimp);
         }
 
         /// <summary>
@@ -1116,9 +1065,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">Source <see cref="Vector4"/>.</param>
         /// <param name="rotation">The <see cref="Quaternion"/> which contains rotation transformation.</param>
         /// <param name="result">Transformed <see cref="Vector4"/> as an output parameter.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Transform(ref Vector4 value, ref Quaternion rotation, out Vector4 result)
         {
-            throw new NotImplementedException();
+            result = nVector4.Transform(value.nvimp, rotation.nqimp);
         }
 
         /// <summary>
@@ -1152,7 +1102,7 @@ namespace Microsoft.Xna.Framework
             for (var i = 0; i < length; i++)
             {
                 var value = sourceArray[sourceIndex + i];
-                destinationArray[destinationIndex + i] = Transform(value, matrix);
+                destinationArray[destinationIndex + i] = nVector4.Transform(value.nvimp, matrix.nmimp);
             }
         }
 
@@ -1186,7 +1136,7 @@ namespace Microsoft.Xna.Framework
             for (var i = 0; i < length; i++)
             {
                 var value = sourceArray[sourceIndex + i];
-                destinationArray[destinationIndex + i] = Transform(value, rotation);
+                destinationArray[destinationIndex + i] = nVector4.Transform(value.nvimp, rotation.nqimp);
             }
         }
 
@@ -1208,7 +1158,7 @@ namespace Microsoft.Xna.Framework
             for (var i = 0; i < sourceArray.Length; i++)
             {
                 var value = sourceArray[i];
-                destinationArray[i] = Transform(value, matrix);
+                destinationArray[i] = nVector4.Transform(value.nvimp, matrix.nmimp);
             }
         }
 
@@ -1230,7 +1180,7 @@ namespace Microsoft.Xna.Framework
             for (var i = 0; i < sourceArray.Length; i++)
             {
                 var value = sourceArray[i];
-                destinationArray[i] = Transform(value, rotation);
+                destinationArray[i] = nVector4.Transform(value.nvimp, rotation.nqimp);
             }
         }
 
@@ -1264,9 +1214,10 @@ namespace Microsoft.Xna.Framework
         /// <summary>
         /// Returns a <see cref="System.Numerics.Vector4"/>.
         /// </summary>
-        public System.Numerics.Vector4 ToNumerics()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public nVector4 ToNumerics()
         {
-            return new System.Numerics.Vector4(this.X, this.Y, this.Z, this.W);
+            return this.nvimp;
         }
 
         #endregion
@@ -1277,9 +1228,10 @@ namespace Microsoft.Xna.Framework
         /// Converts a <see cref="System.Numerics.Vector4"/> to a <see cref="Vector4"/>.
         /// </summary>
         /// <param name="value">The converted value.</param>
-        public static implicit operator Vector4(System.Numerics.Vector4 value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator Vector4(nVector4 value)
         {
-            return new Vector4(value.X, value.Y, value.Z, value.W);
+            return new Vector4(value);
         }
 
         /// <summary>
@@ -1287,9 +1239,11 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="value">Source <see cref="Vector4"/> on the right of the sub sign.</param>
         /// <returns>Result of the inversion.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator -(Vector4 value)
         {
-            return new Vector4(-value.X, -value.Y, -value.Z, -value.W);
+            value.nvimp = -value.nvimp;
+            return value;
         }
 
         /// <summary>
@@ -1298,12 +1252,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1"><see cref="Vector4"/> instance on the left of the equal sign.</param>
         /// <param name="value2"><see cref="Vector4"/> instance on the right of the equal sign.</param>
         /// <returns><c>true</c> if the instances are equal; <c>false</c> otherwise.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Vector4 value1, Vector4 value2)
         {
-            return value1.W == value2.W
-                && value1.X == value2.X
-                && value1.Y == value2.Y
-                && value1.Z == value2.Z;
+            return value1.nvimp == value2.nvimp;
         }
 
         /// <summary>
@@ -1312,9 +1264,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1"><see cref="Vector4"/> instance on the left of the not equal sign.</param>
         /// <param name="value2"><see cref="Vector4"/> instance on the right of the not equal sign.</param>
         /// <returns><c>true</c> if the instances are not equal; <c>false</c> otherwise.</returns>	
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(Vector4 value1, Vector4 value2)
         {
-            return !(value1 == value2);
+            return value1.nvimp != value2.nvimp;
         }
 
         /// <summary>
@@ -1323,12 +1276,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/> on the left of the add sign.</param>
         /// <param name="value2">Source <see cref="Vector4"/> on the right of the add sign.</param>
         /// <returns>Sum of the vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator +(Vector4 value1, Vector4 value2)
         {
-            value1.W += value2.W;
-            value1.X += value2.X;
-            value1.Y += value2.Y;
-            value1.Z += value2.Z;
+            value1.nvimp += value2.nvimp;
             return value1;
         }
 
@@ -1338,12 +1289,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/> on the left of the sub sign.</param>
         /// <param name="value2">Source <see cref="Vector4"/> on the right of the sub sign.</param>
         /// <returns>Result of the vector subtraction.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator -(Vector4 value1, Vector4 value2)
         {
-            value1.W -= value2.W;
-            value1.X -= value2.X;
-            value1.Y -= value2.Y;
-            value1.Z -= value2.Z;
+            value1.nvimp -= value2.nvimp;
             return value1;
         }
 
@@ -1353,12 +1302,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/> on the left of the mul sign.</param>
         /// <param name="value2">Source <see cref="Vector4"/> on the right of the mul sign.</param>
         /// <returns>Result of the vector multiplication.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator *(Vector4 value1, Vector4 value2)
         {
-            value1.W *= value2.W;
-            value1.X *= value2.X;
-            value1.Y *= value2.Y;
-            value1.Z *= value2.Z;
+            value1.nvimp *= value2.nvimp;
             return value1;
         }
 
@@ -1368,12 +1315,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value">Source <see cref="Vector4"/> on the left of the mul sign.</param>
         /// <param name="scaleFactor">Scalar value on the right of the mul sign.</param>
         /// <returns>Result of the vector multiplication with a scalar.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator *(Vector4 value, float scaleFactor)
         {
-            value.W *= scaleFactor;
-            value.X *= scaleFactor;
-            value.Y *= scaleFactor;
-            value.Z *= scaleFactor;
+            value.nvimp *= scaleFactor;
             return value;
         }
 
@@ -1383,12 +1328,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="scaleFactor">Scalar value on the left of the mul sign.</param>
         /// <param name="value">Source <see cref="Vector4"/> on the right of the mul sign.</param>
         /// <returns>Result of the vector multiplication with a scalar.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator *(float scaleFactor, Vector4 value)
         {
-            value.W *= scaleFactor;
-            value.X *= scaleFactor;
-            value.Y *= scaleFactor;
-            value.Z *= scaleFactor;
+            value.nvimp *= scaleFactor;
             return value;
         }
 
@@ -1398,12 +1341,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/> on the left of the div sign.</param>
         /// <param name="value2">Divisor <see cref="Vector4"/> on the right of the div sign.</param>
         /// <returns>The result of dividing the vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator /(Vector4 value1, Vector4 value2)
         {
-            value1.W /= value2.W;
-            value1.X /= value2.X;
-            value1.Y /= value2.Y;
-            value1.Z /= value2.Z;
+            value1.nvimp /= value2.nvimp;
             return value1;
         }
 
@@ -1413,13 +1354,10 @@ namespace Microsoft.Xna.Framework
         /// <param name="value1">Source <see cref="Vector4"/> on the left of the div sign.</param>
         /// <param name="divider">Divisor scalar on the right of the div sign.</param>
         /// <returns>The result of dividing a vector by a scalar.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator /(Vector4 value1, float divider)
         {
-            float factor = 1f / divider;
-            value1.W *= factor;
-            value1.X *= factor;
-            value1.Y *= factor;
-            value1.Z *= factor;
+            value1.nvimp /= divider;
             return value1;
         }
 
