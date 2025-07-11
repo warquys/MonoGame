@@ -828,9 +828,7 @@ namespace Microsoft.Xna.Framework
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix CreateRotationX(float radians)
         {
-            Matrix result;
-            CreateRotationX(radians, out result);
-            return result;
+            return nMatrix.CreateRotationX(radians);
         }
 
         /// <summary>
@@ -841,7 +839,7 @@ namespace Microsoft.Xna.Framework
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CreateRotationX(float radians, out Matrix result)
         {
-            result = Matrix.Identity;
+            result = nMatrix.CreateRotationX(radians);
         }
 
         /// <summary>
@@ -1179,7 +1177,7 @@ namespace Microsoft.Xna.Framework
         /// <returns><c>true</c> if the instances are equal; <c>false</c> otherwise.</returns>
         public bool Equals(Matrix other)
         {
-            return nmimp.Equals(other.nmimp);
+            return nmimp == other.nmimp;
         }
 
         /// <summary>

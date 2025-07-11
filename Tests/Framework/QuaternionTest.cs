@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.Xna.Framework;
 using NUnit.Framework;
 
 namespace MonoGame.Tests.Framework
@@ -18,7 +19,7 @@ namespace MonoGame.Tests.Framework
         [Test]
         public void Constructors()
         {
-            Quaternion expected;
+            Unsafe.SkipInit<Quaternion>(out Quaternion expected);
             expected.X = 1;
             expected.Y = 2;
             expected.Z = 3;

@@ -62,7 +62,7 @@ namespace Microsoft.Xna.Framework
         /// <summary>
         /// The w coordinate of this <see cref="Vector4"/>.
         /// </summary>
-        [DataMember, FieldOffset(sizeof(float) * 4)]
+        [DataMember, FieldOffset(sizeof(float) * 3)]
         public float W;
 
         #endregion

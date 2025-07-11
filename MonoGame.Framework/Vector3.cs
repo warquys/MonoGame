@@ -560,7 +560,7 @@ namespace Microsoft.Xna.Framework
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(Vector3 other)
         {
-            return nvimp.Equals(other.nvimp);
+            return nvimp == other.nvimp;
         }
 
         /// <summary>

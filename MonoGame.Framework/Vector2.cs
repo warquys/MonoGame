@@ -578,7 +578,7 @@ namespace Microsoft.Xna.Framework
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(Vector2 other)
         {
-            return vvimp.Equals(other);
+            return vvimp == other.vvimp;
         }
 
         /// <summary>

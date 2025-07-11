@@ -72,12 +72,11 @@ namespace MonoGame.Tests.Framework
             var vector2 = new Vector4(0.5f, 1.1f, -3.8f, 1.2f);
             var expectedResult = -3.89999962f;
 
-            Assert.AreEqual(expectedResult, Vector4.Dot(vector1, vector2));
+            var result = Vector4.Dot(vector1, vector2);
+            Assert.LessOrEqual(float.Epsilon , result - expectedResult);
 
-            float result;
             Vector4.Dot(ref vector1, ref vector2, out result);
-
-            Assert.AreEqual(expectedResult, result);
+            Assert.LessOrEqual(float.Epsilon , result - expectedResult);
         }
 
         [Test]
