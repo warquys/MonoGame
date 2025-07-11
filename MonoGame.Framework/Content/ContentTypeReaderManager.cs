@@ -154,6 +154,7 @@ namespace Microsoft.Xna.Framework.Content
                 {
                     // This string tells us what reader we need to decode the following data
                     string originalReaderTypeString = reader.ReadString();
+                    originalReaderTypeString = MirgrationHelper.Migrate(originalReaderTypeString);
 
                     Func<ContentTypeReader> readerFunc;
                     if (typeCreators.TryGetValue(originalReaderTypeString, out readerFunc))
@@ -301,6 +302,73 @@ namespace Microsoft.Xna.Framework.Content
         public static void ClearTypeCreators()
         {
             typeCreators.Clear();
+        }
+
+        // HACK: Migration solution, XNA numeric get remove for System Numeric
+        private static class MirgrationHelper
+        {
+            private static Regex removedOldType = new Regex("""
+                    Microsoft.Xna.Framework.(?<type>Vector2|Vector3|Vector4|Matrix|Quaternion)
+                    (?<module>,\s(?:Microsoft.Xna.Framework|MonoGame.Framework))
+                    (?<version>,\sVersion=\d+(?:.\d+)*)
+                    (?<culture>,\sCulture=neutral)?
+                    (?<token>,\sPublicKeyToken=[a-z0-9]+)?
+                    """, RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
+
+            private static string module = null;
+            private static string version = null;
+            private static string cultureSet = null;
+            private static string token = null;
+
+            static MirgrationHelper()
+            {
+                Regex infoExtractor = new Regex("""
+                    System.Numerics.Vector2
+                    (?<module>,\s(?:System.Private.CoreLib|mscorlib|System.Numerics.Vectors))?
+                    (?<version>,\sVersion=\d+(?:.\d+)*)?
+                    (?<culture>,\sCulture=neutral)?
+                    (?<token>,\sPublicKeyToken=[a-z0-9]+)?
+                    """, RegexOptions.IgnorePatternWhitespace);
+
+                var match = infoExtractor.Match(typeof(ListReader<Vector2>).FullName);
+                if (!match.Success)
+                    throw new Exception("Failed to extract information from Vector2 type for migration hack.");
+
+                if (match.Groups["module"].Success)
+                    module = match.Groups["namesapce"].Value;
+                if (match.Groups["version"].Success)
+                    version = match.Groups["version"].Value;
+                if (match.Groups["culture"].Success)
+                    cultureSet = match.Groups["culture"].Value;
+                if (match.Groups["token"].Success)
+                    token = match.Groups["token"].Value;
+            }
+
+            public static string Migrate(string type)
+            {
+                return removedOldType.Replace(type, static (Match match) =>
+                {
+                    string remplacement = match.Groups["type"].Value switch
+                    {
+                        "Vector2" => typeof(Vector2).FullName,
+                        "Vector3" => typeof(Vector3).FullName,
+                        "Vector4" => typeof(Vector4).FullName,
+                        "Matrix" => typeof(Matrix).FullName,
+                        "Quaternion" => typeof(Quaternion).FullName,
+                        _ => throw new NotSupportedException($"Unsupported type in migration hack: {match.Groups["type"].Value}")
+                    };
+                    if (module != null && match.Groups["module"].Success)
+                        remplacement += module;
+                    if (version != null && match.Groups["version"].Success)
+                        remplacement += version;
+                    if (cultureSet != null && match.Groups["culture"].Success)
+                        remplacement += cultureSet;
+                    if (token != null && match.Groups["token"].Success)
+                        remplacement += token;
+
+                    return remplacement;
+                });
+            }
         }
 
     }

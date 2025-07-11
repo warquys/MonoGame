@@ -14,6 +14,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Tests.Components;
 using MonoGame.Tests.Utilities;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 
 namespace MonoGame.Tests.Graphics
@@ -86,6 +87,9 @@ namespace MonoGame.Tests.Graphics
             gdm = null;
             gd = null;
             content = null;
+
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Passed)
+                return;
 
             if (_framePrepared && !_framesChecked)
                 Assert.Fail("Initialized fixture for rendering but did not check frames.");

@@ -8,7 +8,6 @@ using System.Drawing.Drawing2D;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
-using SharpDX;
 
 namespace Microsoft.Xna.Framework;
 

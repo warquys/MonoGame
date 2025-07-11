@@ -22,7 +22,7 @@ namespace Microsoft.Xna.Framework.Design
 
             return false;
         }
-
+        
         public static object ConvertToFromVector4(ITypeDescriptorContext context, CultureInfo culture, Vector4 value, Type destinationType)
         {
             if (destinationType == typeof(float))

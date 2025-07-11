@@ -150,8 +150,9 @@ namespace Microsoft.Xna.Framework.Graphics
             // Set the world and world inverse transpose matrices.
             if ((dirtyFlags & EffectDirtyFlags.World) != 0)
             {
-                if (Matrix.Invert(world, out Matrix worldTranspose))
-                    throw new InvalidOperationException("Cannot invert the world matrix.");
+                Matrix.Invert(view, out Matrix worldTranspose);
+                //if (Matrix.Invert(world, out Matrix worldTranspose))
+                //    throw new InvalidOperationException("Cannot invert the world matrix.");
                 Matrix worldInverseTranspose = Matrix.Transpose(worldTranspose);
                 
                 worldParam.SetValue(world);
@@ -163,8 +164,9 @@ namespace Microsoft.Xna.Framework.Graphics
             // Set the eye position.
             if ((dirtyFlags & EffectDirtyFlags.EyePosition) != 0)
             {
-                if (Matrix.Invert(view, out Matrix viewInverse))
-                    throw new InvalidOperationException("Cannot invert the view matrix.");
+                Matrix.Invert(view, out Matrix viewInverse);
+                // if (Matrix.Invert(view, out Matrix viewInverse))
+                //     throw new InvalidOperationException("Cannot invert the view matrix.");
 
                 eyePositionParam.SetValue(viewInverse.Translation);
 
