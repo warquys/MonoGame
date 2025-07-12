@@ -583,40 +583,6 @@ public static class MatrixExtensions
         }
 
         /// <summary>
-        /// Decomposes this matrix to translation, rotation and scale elements. Returns <c>true</c> if matrix can be decomposed; <c>false</c> otherwise.
-        /// </summary>
-        /// <param name="scale">Scale vector as an output parameter.</param>
-        /// <param name="rotation">Rotation quaternion as an output parameter.</param>
-        /// <param name="translation">Translation vector as an output parameter.</param>
-        /// <returns><c>true</c> if matrix can be decomposed; <c>false</c> otherwise.</returns>
-        public bool Decompose(out Vector3 scale, out Quaternion rotation, out Vector3 translation)
-        {
-            translation = matrix.Translation;
-
-            float xs = (Math.Sign(matrix.M11 * matrix.M12 * matrix.M13 * matrix.M14) < 0) ? -1 : 1;
-            float ys = (Math.Sign(matrix.M21 * matrix.M22 * matrix.M23 * matrix.M24) < 0) ? -1 : 1;
-            float zs = (Math.Sign(matrix.M31 * matrix.M32 * matrix.M33 * matrix.M34) < 0) ? -1 : 1;
-
-            scale.X = xs * MathF.Sqrt(matrix.M11 * matrix.M11 + matrix.M12 * matrix.M12 + matrix.M13 * matrix.M13);
-            scale.Y = ys * MathF.Sqrt(matrix.M21 * matrix.M21 + matrix.M22 * matrix.M22 + matrix.M23 * matrix.M23);
-            scale.Z = zs * MathF.Sqrt(matrix.M31 * matrix.M31 + matrix.M32 * matrix.M32 + matrix.M33 * matrix.M33);
-
-            if (scale.X == 0.0 || scale.Y == 0.0 || scale.Z == 0.0)
-            {
-                rotation = Quaternion.Identity;
-                return false;
-            }
-
-            Matrix m1 = new Matrix(matrix.M11 / scale.X, matrix.M12 / scale.X, matrix.M13 / scale.X, 0,
-                               matrix.M21 / scale.Y, matrix.M22 / scale.Y, matrix.M23 / scale.Y, 0,
-                               matrix.M31 / scale.Z, matrix.M32 / scale.Z, matrix.M33 / scale.Z, 0,
-                               0, 0, 0, 1);
-
-            rotation = Quaternion.CreateFromRotationMatrix(m1);
-            return true;
-        }
-
-        /// <summary>
         /// Returns a determinant of this <see cref="Matrix"/>.
         /// </summary>
         /// <returns>Determinant of this <see cref="Matrix"/></returns>
