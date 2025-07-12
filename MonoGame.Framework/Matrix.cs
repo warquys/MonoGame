@@ -26,6 +26,7 @@ public static class MatrixExtensions
         /// <exception cref="ArgumentOutOfRangeException">
         /// If the index is less than <code>0</code> or larger than <code>15</code>.
         /// </exception>
+        /* // Preview is preview, Visual Studio can compile but not the dotnet command, idk why
         public float this[int index]
         {
             get
@@ -76,6 +77,7 @@ public static class MatrixExtensions
                 }
             }
         }
+        */
 
         /// <summary>
         /// The backward vector formed from the third row M31, M32, M33 elements.
