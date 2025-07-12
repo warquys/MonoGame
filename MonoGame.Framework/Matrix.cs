@@ -855,8 +855,7 @@ public static class MatrixExtensions
         // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix Invert(Matrix value)
         {
-            Matrix result;
-            Invert(ref value, out result);
+            Matrix.Invert(value, out Matrix result);
             return result;
         }
 
@@ -869,8 +868,9 @@ public static class MatrixExtensions
         // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Invert(ref Matrix value, out Matrix result)
         {
-            if (!Matrix.Invert(value, out result))
-                throw new InvalidOperationException("The matrix do not have an invert.");
+            Matrix.Invert(value, out result);
+            //if (!Matrix.Invert(value, out result))
+            //    throw new InvalidOperationException("The matrix do not have an invert.");
         }
 
 
