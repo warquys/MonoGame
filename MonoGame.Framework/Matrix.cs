@@ -26,7 +26,6 @@ public static class MatrixExtensions
         /// <exception cref="ArgumentOutOfRangeException">
         /// If the index is less than <code>0</code> or larger than <code>15</code>.
         /// </exception>
-        /* // Preview is preview, Visual Studio can compile but not the dotnet command, idk why
         public float this[int index]
         {
             get
@@ -77,7 +76,6 @@ public static class MatrixExtensions
                 }
             }
         }
-        */
 
         /// <summary>
         /// The backward vector formed from the third row M31, M32, M33 elements.
@@ -583,6 +581,18 @@ public static class MatrixExtensions
         }
 
         /// <summary>
+        /// Decomposes this matrix to translation, rotation and scale elements. Returns <c>true</c> if matrix can be decomposed; <c>false</c> otherwise.
+        /// </summary>
+        /// <param name="scale">Scale vector as an output parameter.</param>
+        /// <param name="rotation">Rotation quaternion as an output parameter.</param>
+        /// <param name="translation">Translation vector as an output parameter.</param>
+        /// <returns><c>true</c> if matrix can be decomposed; <c>false</c> otherwise.</returns>
+        public bool Decompose(out Vector3 scale, out Quaternion rotation, out Vector3 translation)
+        {
+            return Matrix4x4.Decompose(matrix, out scale, out rotation, out translation);
+        }
+
+        /// <summary>
         /// Returns a determinant of this <see cref="Matrix"/>.
         /// </summary>
         /// <returns>Determinant of this <see cref="Matrix"/></returns>
@@ -940,5 +950,7 @@ public static class MatrixExtensions
         {
             result = Matrix.Transpose(value);
         }
+
+ 
     }
 }

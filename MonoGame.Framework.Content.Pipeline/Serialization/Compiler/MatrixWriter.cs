@@ -3,7 +3,7 @@
 // file 'LICENSE.txt', which is part of this source code package.
 
 using System;
-using TOutput = Microsoft.Xna.Framework.Matrix;
+using TOutput = System.Numerics.Matrix4x4;
 
 namespace Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler
 {

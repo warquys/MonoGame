@@ -4,7 +4,8 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <BaseOutputPath>..\Artifacts\MonoGame.Framework.Content.Pipeline</BaseOutputPath>
+	<LangVersion>preview</LangVersion>
+	<BaseOutputPath>..\Artifacts\MonoGame.Framework.Content.Pipeline</BaseOutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Description>The Monogame Content Pipeline for Windows, Mac and Linux is used to compile raw content to xnb files.</Description>
     <PackageTags>monogame;content;content pipeline</PackageTags>
@@ -63,11 +64,6 @@
   <ItemGroup>
     <ProjectReference Include="..\MonoGame.Framework\MonoGame.Framework.DesktopGL.csproj">
       <PrivateAssets>All</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="..\Tools\MonoGame.Effect.Compiler\MonoGame.Effect.Compiler.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <OutputItemType>Content</OutputItemType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </ProjectReference>
   </ItemGroup>
 

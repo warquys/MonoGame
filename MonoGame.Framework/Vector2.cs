@@ -807,6 +807,7 @@ public static class Vector2Extensions
         /// Gets a <see cref="Point"/> representation for this object.
         /// </summary>
         /// <returns>A <see cref="Point"/> representation for this object.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Point ToPoint()
         {
             return new Point((int)vector2.X, (int)vector2.Y);
@@ -817,8 +818,8 @@ public static class Vector2Extensions
     extension(Vector64<float> vector64)
     {
         /// <summary>Reinterprets a <see cref="Vector128{Single}" /> as a new <see cref="Vector2" />.</summary>
-        /// <param name="value">The vector to reinterpret.</param>
-        /// <returns><paramref name="value" /> reinterpreted as a new <see cref="Vector2" />.</returns>
+        /// <param name="vector64">The vector to reinterpret.</param>
+        /// <returns><paramref name="vector64" /> reinterpreted as a new <see cref="Vector2" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector2 AsVector2()
         {

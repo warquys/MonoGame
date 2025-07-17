@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
@@ -158,6 +159,23 @@ namespace Microsoft.Xna.Framework
             return !a.Equals(b);
         }
 
+        /// <summary>
+        /// Converts a <see cref="Vector2"/> to a <see cref="Point"/>.
+        /// </summary>
+        /// <param name="point"> instance of <see cref="Vector2"/> to convert to a <see cref="Point"/>.</param>
+        public static implicit operator Vector2(Point point)
+        {
+            return new Vector2(point.X, point.Y);
+        }
+
+        /// <summary>
+        /// Converts a <see cref="Vector2"/> to a <see cref="Point"/>.
+        /// </summary>
+        /// <param name="vector"> instance of <see cref="Vector2"/> to convert to a <see cref="Point"/>.</param>
+        public static explicit operator Point(Vector2 vector)
+        {
+            return new Point((int)vector.X, (int)vector.Y);
+        }
         #endregion
 
         #region Public methods
