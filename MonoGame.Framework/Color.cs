@@ -408,7 +408,7 @@ namespace Microsoft.Xna.Framework
             return (a._packedValue == b._packedValue);
         }
 	
-	/// <summary>
+	    /// <summary>
         /// Compares whether two <see cref="Color"/> instances are not equal.
         /// </summary>
         /// <param name="a"><see cref="Color"/> instance on the left of the not equal sign.</param>
@@ -417,6 +417,15 @@ namespace Microsoft.Xna.Framework
         public static bool operator !=(Color a, Color b)
         {
             return (a._packedValue != b._packedValue);
+        }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="color"></param>
+        public static implicit operator Color(System.Drawing.Color color)
+        {
+            return new Color(color.R, color.G, color.B, color.A);
         }
 
         /// <summary>
