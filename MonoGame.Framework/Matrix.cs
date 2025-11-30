@@ -19,6 +19,7 @@ public static class MatrixExtensions
     /// <inheritdoc cref="MatrixExtensions" />
     extension (Matrix matrix)
     {
+        /*
         /// <summary>
         /// Get or set the matrix element at the given index, indexed in row major order.
         /// </summary>
@@ -76,6 +77,7 @@ public static class MatrixExtensions
                 }
             }
         }
+        */
 
         /// <summary>
         /// The backward vector formed from the third row M31, M32, M33 elements.
