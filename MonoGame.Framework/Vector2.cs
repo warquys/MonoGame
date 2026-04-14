@@ -795,7 +795,6 @@ public static class Vector2Extensions
         }
 
         /// <summary>Reinterprets a <see cref="Vector2" /> as a new <see cref="Vector64{Single}" />.</summary>
-        /// <param name="vector2">The vector to reinterpret.</param>
         /// <returns><paramref name="vector2" /> reinterpreted as a new <see cref="Vector64{Single}" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector64<float> AsVector64()
@@ -818,7 +817,6 @@ public static class Vector2Extensions
     extension(Vector64<float> vector64)
     {
         /// <summary>Reinterprets a <see cref="Vector128{Single}" /> as a new <see cref="Vector2" />.</summary>
-        /// <param name="vector64">The vector to reinterpret.</param>
         /// <returns><paramref name="vector64" /> reinterpreted as a new <see cref="Vector2" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector2 AsVector2()
