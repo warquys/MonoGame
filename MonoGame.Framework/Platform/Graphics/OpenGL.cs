@@ -1571,12 +1571,29 @@ namespace MonoGame.OpenGL
             if (intPtr == IntPtr.Zero) {
                 throw new OutOfMemoryException ();
             }
-            fixed (char* chars = str + RuntimeHelpers.OffsetToStringData / 2) {
+            fixed (char* chars = &str.GetPinnableReference()) {
                 int bytes = Encoding.ASCII.GetBytes (chars, str.Length, (byte*)((void*)intPtr), num);
                 Marshal.WriteByte (intPtr, bytes, 0);
                 return intPtr;
             }
         }
+
+        protected unsafe static string MarshalPtrToString(IntPtr str)
+        {
+            if (str == IntPtr.Zero)
+                return string.Empty;
+            
+            int length = 0;
+            byte* ptr = (byte*)str.ToPointer();
+            while (*(ptr + length) != 0)
+                length++;
+
+            if (length == 0)
+                return string.Empty;
+
+            return Encoding.ASCII.GetString(new Span<byte>(ptr, length));
+        }
+
 
         protected static void FreeStringArrayPtr (IntPtr ptr, int length)
         {

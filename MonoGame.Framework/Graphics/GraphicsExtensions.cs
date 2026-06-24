@@ -3,6 +3,7 @@
 // file 'LICENSE.txt', which is part of this source code package.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 #if OPENGL
@@ -964,10 +965,28 @@ namespace Microsoft.Xna.Framework.Graphics
 		[DebuggerHidden]
         public static void CheckGLError()
         {
-           var error = GL.GetError();
-            //Console.WriteLine(error);
-            if (error != ErrorCode.NoError)
-                throw new MonoGameGLException("GL.GetError() returned " + error.ToString());
+            var error = GL.GetError();
+
+            if (error == ErrorCode.NoError)
+            {
+                return;
+            }
+
+            var exception = new MonoGameGLException("GL.GetError() returned " + error.ToString());
+            error = GL.GetError();
+            if (error == ErrorCode.NoError)
+            {
+                throw exception;
+            }
+
+            List<Exception> exceptions = [exception];
+            while ((error = GL.GetError()) != ErrorCode.NoError)
+            {
+                exceptions.Add(new MonoGameGLException("GL.GetError() returned " + error.ToString()));
+            }
+
+
+            throw new AggregateException(exceptions);
         }
 #endif
 
@@ -992,8 +1011,12 @@ namespace Microsoft.Xna.Framework.Graphics
 #endif
             }
 
-    internal class MonoGameGLException : Exception
+    /// <summary>
+    /// Wrap an native GL exception.
+    /// </summary>
+    public class MonoGameGLException : Exception
     {
+        /// <inheritdoc/>
         public MonoGameGLException(string message)
             : base(message)
         {
