@@ -789,9 +789,10 @@ public static class MatrixExtensions
         /// </summary>
         /// <param name="matrix1">Source <see cref="Matrix"/>.</param>
         /// <param name="divider">Divisor scalar.</param>
-        /// <returns>The result of dividing a matrix by a scalar.</returns>
+        /// <param name="result">The result of dividing a matrix by a scalar.</param>
         public static unsafe void Divide(Matrix matrix1, float divider, out Matrix result)
         {// TODO: TEST
+         // Meaby change to result = matrix1 * (1 / divider);
             if (Vector.IsHardwareAccelerated)
             {
                 Unsafe.SkipInit(out result);

@@ -68,13 +68,13 @@ public static class PlaneExtensions
 
         /// <summary>
         /// Get the dot product of a <see cref="Vector3"/> with
-        /// the <see cref="Normal"/> vector of this <see cref="Plane"/>
-        /// plus the <see cref="D"/> value of this <see cref="Plane"/>.
+        /// the <see cref="Plane.Normal"/> vector of this <see cref="Plane"/>
+        /// plus the <see cref="Plane.D"/> value of this <see cref="Plane"/>.
         /// </summary>
         /// <param name="value">The <see cref="Vector3"/> to calculate the dot product with.</param>
         /// <returns>
         /// The dot product of the specified <see cref="Vector3"/> and the normal of this <see cref="Plane"/>
-        /// plus the <see cref="D"/> value of this <see cref="Plane"/>.
+        /// plus the <see cref="Plane.D"/> value of this <see cref="Plane"/>.
         /// </returns>
         // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float DotCoordinate(Vector3 value)
@@ -84,13 +84,13 @@ public static class PlaneExtensions
 
         /// <summary>
         /// Get the dot product of a <see cref="Vector3"/> with
-        /// the <see cref="Normal"/> vector of this <see cref="Plane"/>
-        /// plus the <see cref="D"/> value of this <see cref="Plane"/>.
+        /// the <see cref="Plane.Normal"/> vector of this <see cref="Plane"/>
+        /// plus the <see cref="Plane.D"/> value of this <see cref="Plane"/>.
         /// </summary>
         /// <param name="value">The <see cref="Vector3"/> to calculate the dot product with.</param>
         /// <param name="result">
         /// The dot product of the specified <see cref="Vector3"/> and the normal of this <see cref="Plane"/>
-        /// plus the <see cref="D"/> value of this <see cref="Plane"/>.
+        /// plus the <see cref="Plane.D"/> value of this <see cref="Plane"/>.
         /// </param>
         // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void DotCoordinate(ref Vector3 value, out float result)
@@ -100,7 +100,7 @@ public static class PlaneExtensions
 
         /// <summary>
         /// Get the dot product of a <see cref="Vector3"/> with
-        /// the <see cref="Normal"/> vector of this <see cref="Plane"/>.
+        /// the <see cref="Plane.Normal"/> vector of this <see cref="Plane"/>.
         /// </summary>
         /// <param name="value">The <see cref="Vector3"/> to calculate the dot product with.</param>
         /// <returns>
@@ -114,7 +114,7 @@ public static class PlaneExtensions
 
         /// <summary>
         /// Get the dot product of a <see cref="Vector3"/> with
-        /// the <see cref="Normal"/> vector of this <see cref="Plane"/>.
+        /// the <see cref="Plane.Normal"/> vector of this <see cref="Plane"/>.
         /// </summary>
         /// <param name="value">The <see cref="Vector3"/> to calculate the dot product with.</param>
         /// <param name="result">

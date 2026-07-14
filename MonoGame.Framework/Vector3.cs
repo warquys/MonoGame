@@ -1,4 +1,4 @@
-global using Vector3 = System.Numerics.Vector3;
+﻿global using Vector3 = System.Numerics.Vector3;
 using System;
 using System.Runtime.Intrinsics;
 

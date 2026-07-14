@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-	<LangVersion>preview</LangVersion>
+	<LangVersion>latest</LangVersion>
 	<DefineConstants>OPENGL;XNADESIGNPROVIDED;DESKTOPGL;NETSTANDARD;STBSHARP_INTERNAL</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Description>The MonoGame runtime supporting Windows, Linux and macOS using SDL2 and OpenGL.</Description>
@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MonoGame.Library.SDL" Version="2.32.2.1" />
+    <PackageReference Include="MonoGame.Library.SDL" Version="2.32.10.2" />
   </ItemGroup>
 
   <ItemGroup>

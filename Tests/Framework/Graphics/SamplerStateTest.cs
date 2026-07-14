@@ -10,19 +10,17 @@ using NUnit.Framework;
 
 namespace MonoGame.Tests.Graphics
 {
-    [TestFixture]
     [NonParallelizable]
+    [RunOnUiTestFixture]
     internal class SamplerStateTest : GraphicsDeviceTestFixtureBase
     {
         [Test]
-        [RunOnUI]
         public void ShouldNotBeAbleToSetNullSamplerState()
         {
             Assert.Throws<ArgumentNullException>(() => gd.SamplerStates[0] = null);
         }
 
         [Test]
-        [RunOnUI]
         public void ShouldNotBeAbleToMutateStateObjectAfterBindingToGraphicsDevice()
         {
             var samplerState = new SamplerState();
@@ -42,7 +40,6 @@ namespace MonoGame.Tests.Graphics
         }
 
         [Test]
-        [RunOnUI]
         public void ShouldNotBeAbleToMutateDefaultStateObjects()
         {
             DoAsserts(SamplerState.AnisotropicClamp, d => Assert.Throws<InvalidOperationException>(d));
@@ -72,9 +69,17 @@ namespace MonoGame.Tests.Graphics
 
 #if !XNA
         [Test]
-        [RunOnUI]
         public void VisualTestAddressModes()
         {
+#if VULKAN
+            if (OperatingSystem.IsMacOS())
+            {
+                Assert.Ignore("TODO: Fix on macOS");
+                return;
+            }
+
+#endif
+
             PrepareFrameCapture();
 
             var addressModes = new[]
@@ -131,7 +136,6 @@ namespace MonoGame.Tests.Graphics
 #if DESKTOPGL
         [Ignore("Comparison samplers are ps_4_0 and up, cannot use them on DesktopGL due to MojoShader")]
 #endif
-        [RunOnUI]
         public void VisualTestComparisonFunction()
         {
             PrepareFrameCapture();

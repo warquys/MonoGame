@@ -128,7 +128,7 @@ public static class QuaternionExtensions
         /// <summary>
         /// Returns the inverse quaternion which represents the opposite rotation.
         /// </summary>
-        /// <param name="quaternion">Source <see cref="Quaternion"/>.</param>
+        /// <param name="value">Source <see cref="Quaternion"/>.</param>
         /// <param name="result">The inverse quaternion as an output parameter.</param>
         [Obsolete("Use Quaternion.Inverse(Quaternion)")]
         // [MethodImpl(MethodImplOptions.AggressiveInlining)]

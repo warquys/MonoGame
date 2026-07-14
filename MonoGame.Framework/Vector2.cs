@@ -310,7 +310,6 @@ public static class Vector2Extensions
         /// <summary>
         /// Creates a new <see cref="Vector2"/> that contains linear interpolation of the specified vectors.
         /// Uses <see cref="MathHelper.LerpPrecise"/> on MathHelper for the interpolation.
-        /// Less efficient but more precise compared to <see cref="Vector2.Lerp(ref Vector2, ref Vector2, float, out Vector2)"/>.
         /// See remarks section of <see cref="MathHelper.LerpPrecise"/> on MathHelper for more info.
         /// </summary>
         /// <param name="value1">The first vector.</param>
@@ -322,7 +321,6 @@ public static class Vector2Extensions
         public static void LerpPrecise(ref Vector2 value1, ref Vector2 value2, float amount, out Vector2 result)
         {
             result = Vector2.Lerp(value1, value2, amount);
-
         }
 
         /// <summary>

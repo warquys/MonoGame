@@ -8,8 +8,8 @@ using NUnit.Framework.Internal;
 
 namespace MonoGame.Tests.Graphics
 {
-    [TestFixture]
     
+    [RunOnUiTestFixture]
     internal class ScissorRectangleTest : GraphicsDeviceTestFixtureBase
     {
         private SpriteBatch _spriteBatch;
@@ -30,16 +30,16 @@ namespace MonoGame.Tests.Graphics
         [TearDown]
         public override void TearDown()
         {
-            _spriteBatch.Dispose();
+            _spriteBatch?.Dispose();
             _spriteBatch = null;
 
-            _texture.Dispose();
+            _texture?.Dispose();
             _texture = null;
 
-            _extraRenderTarget.Dispose();
+            _extraRenderTarget?.Dispose();
             _extraRenderTarget = null;
 
-            _rt200x200.Dispose();
+            _rt200x200?.Dispose();
             _rt200x200 = null;
 
             base.TearDown();
@@ -47,7 +47,6 @@ namespace MonoGame.Tests.Graphics
 
         [Test]
         [Ignore ("Fails Investigate?")]
-        [RunOnUI]
         public void Draw_with_scissor_rect()
         {
             PrepareFrameCapture();
@@ -76,7 +75,6 @@ namespace MonoGame.Tests.Graphics
         }
 
         [Test]
-        [RunOnUI]
         public void Draw_with_render_target_change()
         {
             PrepareFrameCapture();
@@ -93,7 +91,6 @@ namespace MonoGame.Tests.Graphics
         }
 
         [Test]
-        [RunOnUI]
         public void Draw_without_render_target_change()
         {
             PrepareFrameCapture();
