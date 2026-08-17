@@ -3,8 +3,9 @@
 // file 'LICENSE.txt', which is part of this source code package.
 
 using System;
-using MonoGame.Framework.Utilities;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+using MonoGame.Framework.Utilities;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
@@ -132,7 +133,7 @@ namespace Microsoft.Xna.Framework.Graphics
         /// </exception>
         public void SetData<T>(T[] data, int startIndex, int elementCount, SetDataOptions options) where T : struct
         {
-            var elementSizeInBytes = ReflectionHelpers.FastSizeOf<T>();
+            var elementSizeInBytes = Marshal.SizeOf<T>();
             base.SetDataInternal<T>(0, data, startIndex, elementCount, elementSizeInBytes, options);
         }
     }

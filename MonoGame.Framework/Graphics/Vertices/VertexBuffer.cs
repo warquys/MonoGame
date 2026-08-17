@@ -3,8 +3,9 @@
 // file 'LICENSE.txt', which is part of this source code package.
 
 using System;
-using MonoGame.Framework.Utilities;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+using MonoGame.Framework.Utilities;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
@@ -122,7 +123,7 @@ namespace Microsoft.Xna.Framework.Graphics
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] T
         > (int offsetInBytes, T[] data, int startIndex, int elementCount, int vertexStride = 0) where T : struct
         {
-            var elementSizeInBytes = ReflectionHelpers.FastSizeOf<T>();
+            var elementSizeInBytes = Marshal.SizeOf<T>();
             if (vertexStride == 0)
                 vertexStride = elementSizeInBytes;
 
@@ -155,7 +156,7 @@ namespace Microsoft.Xna.Framework.Graphics
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] T
         >(T[] data) where T : struct
         {
-            var elementSizeInByte = ReflectionHelpers.FastSizeOf<T>();
+            var elementSizeInByte = Marshal.SizeOf<T>();
             this.GetData<T>(0, data, 0, data.Length, elementSizeInByte);
         }
 
@@ -222,7 +223,7 @@ namespace Microsoft.Xna.Framework.Graphics
         /// must be within the <paramref name="data"/> array bounds.</param>
         public void SetData<T>(T[] data, int startIndex, int elementCount) where T : struct
         {
-            var elementSizeInBytes = ReflectionHelpers.FastSizeOf<T>();
+            var elementSizeInBytes = Marshal.SizeOf<T>();
             SetDataInternal<T>(0, data, startIndex, elementCount, elementSizeInBytes, SetDataOptions.None);
 		}
 
@@ -236,7 +237,7 @@ namespace Microsoft.Xna.Framework.Graphics
         /// <inheritdoc cref="SetData{T}(int, T[], int, int, int)" path="/remarks"/>
         public void SetData<T>(T[] data) where T : struct
         {
-            var elementSizeInBytes = ReflectionHelpers.FastSizeOf<T>();
+            var elementSizeInBytes = Marshal.SizeOf<T>();
             SetDataInternal<T>(0, data, 0, data.Length, elementSizeInBytes, SetDataOptions.None);
         }
 
@@ -246,7 +247,7 @@ namespace Microsoft.Xna.Framework.Graphics
             if (data == null)
                 throw new ArgumentNullException("data");
 
-            var elementSizeInBytes = ReflectionHelpers.FastSizeOf<T>();
+            var elementSizeInBytes = Marshal.SizeOf<T>();
             var bufferSize = VertexCount * VertexDeclaration.VertexStride;
 
             if (vertexStride == 0)

@@ -181,7 +181,7 @@ namespace Microsoft.Xna.Framework.Content
                         {
                             // This will not trigger on recent NativeAOT versions, it will crash later on GetDefaultConstructor() with a native access violation
                             // but we keep this catch block for backward compatibility with older NativeAOT
-                            throw new NotSupportedException("It seems that you are using PublishAot and trying to load assets with a reflection-based serializer (which is not natively supported). To work around this error, call ContentTypeReaderManager.AddTypeCreator() in your Game constructor with the following type: " + originalReaderTypeString);
+                            throw new NotSupportedException("It seems that you are using PublishAot and trying to load assets with a reflection-based serializer (which is not natively supported). To work around this error, call ContentTypeReaderManager.AddTypeCreator() in your Game constructor with the following type: " + originalReaderTypeString, e);
                         }
 
                         if (l_readerType != null)

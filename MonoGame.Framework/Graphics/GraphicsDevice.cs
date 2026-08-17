@@ -161,7 +161,7 @@ namespace Microsoft.Xna.Framework.Graphics
         /// <summary>
         /// Occurs when a GraphicsDevice is about to be lost (for example, immediately before a reset).
         /// </summary>
-        public event EventHandler<EventArgs> DeviceLost;
+        public event EventHandler<EventArgs>  DeviceLost;
 
         /// <summary>
         /// Occurs after a GraphicsDevice is reset, allowing an application to recreate all resources.
@@ -1287,7 +1287,7 @@ namespace Microsoft.Xna.Framework.Graphics
             if (vertexDeclaration == null)
                 throw new ArgumentNullException("vertexDeclaration");
 
-            if (vertexDeclaration.VertexStride < ReflectionHelpers.FastSizeOf<T>())
+            if (vertexDeclaration.VertexStride < Marshal.SizeOf<T>())
                 throw new ArgumentOutOfRangeException("vertexDeclaration", "Vertex stride of vertexDeclaration should be at least as big as the stride of the actual vertices.");
 
             PlatformDrawUserPrimitives<T>(primitiveType, vertexData, vertexOffset, vertexDeclaration, vertexCount);
@@ -1395,7 +1395,7 @@ namespace Microsoft.Xna.Framework.Graphics
             if (vertexDeclaration == null)
                 throw new ArgumentNullException("vertexDeclaration");
 
-            if (vertexDeclaration.VertexStride < ReflectionHelpers.FastSizeOf<T>())
+            if (vertexDeclaration.VertexStride < Marshal.SizeOf<T>())
                 throw new ArgumentOutOfRangeException("vertexDeclaration", "Vertex stride of vertexDeclaration should be at least as big as the stride of the actual vertices.");
 
             PlatformDrawUserIndexedPrimitives<T>(primitiveType, vertexData, vertexOffset, numVertices, indexData, indexOffset, primitiveCount, vertexDeclaration);
@@ -1475,7 +1475,7 @@ namespace Microsoft.Xna.Framework.Graphics
             if (vertexDeclaration == null)
                 throw new ArgumentNullException("vertexDeclaration");
 
-            if (vertexDeclaration.VertexStride < ReflectionHelpers.FastSizeOf<T>())
+            if (vertexDeclaration.VertexStride < Marshal.SizeOf<T>())
                 throw new ArgumentOutOfRangeException("vertexDeclaration", "Vertex stride of vertexDeclaration should be at least as big as the stride of the actual vertices.");
 
             PlatformDrawUserIndexedPrimitives<T>(primitiveType, vertexData, vertexOffset, numVertices, indexData, indexOffset, primitiveCount, vertexDeclaration);
@@ -1617,7 +1617,7 @@ namespace Microsoft.Xna.Framework.Graphics
                 height = PresentationParameters.BackBufferHeight;
             }
 
-            var tSize = ReflectionHelpers.FastSizeOf<T>();
+            var tSize = Marshal.SizeOf<T>();
             var fSize = PresentationParameters.BackBufferFormat.GetSize();
             if (tSize > fSize || fSize % tSize != 0)
                 throw new ArgumentException("Type T is of an invalid size for the format of this texture.", "T");
@@ -1628,9 +1628,9 @@ namespace Microsoft.Xna.Framework.Graphics
             var dataByteSize = width * height * fSize;
 
             if (elementCount * tSize != dataByteSize)
-                throw new ArgumentException(string.Format("elementCount is not the right size, " +
-                                            "elementCount * sizeof(T) is {0}, but data size is {1} bytes.",
-                                            elementCount * tSize, dataByteSize), "elementCount");
+                throw new ArgumentException("elementCount is not the right size, " +
+                                            $"elementCount * sizeof(T) is {elementCount * tSize}, but data size is {dataByteSize} bytes.",
+                                            "elementCount");
 
             PlatformGetBackBufferData(rect, data, startIndex, elementCount);
         }
